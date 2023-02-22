@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-android'
+    id 'maven-publish'
 }
 
 android {
@@ -40,4 +41,17 @@ dependencies {
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
     implementation 'com.github.samanzamani:PersianDate:1.6.1'
+}
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                groupId = 'com.github.razaghimahdi'
+                artifactId = 'compose-persian-date-picker'
+                version = '1.0.0'
+            }
+        }
+    }
 }
