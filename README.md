@@ -1,4 +1,4 @@
-# Compose-Persian-Date-Picker
+# Compose Persian Date Picker
 
 A library which allows you to have Persian date picker dialog by **Jetpack Compose**.
 
