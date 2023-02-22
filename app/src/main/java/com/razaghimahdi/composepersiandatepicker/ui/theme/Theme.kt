@@ -40,7 +40,7 @@ fun ComposePersianDatePickerTheme(
 
     MaterialTheme(
         colors = colors,
-        typography = Typography,
+        typography = VazirTypography,
         shapes = Shapes,
         content = content
     )
