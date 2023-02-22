@@ -40,18 +40,12 @@ if (showDialog.value) {
 Button(onClick = { showDialog.value = true }) {
     Text(text = "نمایش")
 }
-
-
-
-
-
 ```
 
 ### Step 4. How to initial
 
 ```Kotlin
 val rememberPersianDataPicker = rememberPersianDataPicker()
-
 
 // 3 ways to update date
 rememberPersianDataPicker.updateDate(date=Date())
@@ -68,19 +62,16 @@ rememberPersianDataPicker.updateMinYear(1350)
 rememberPersianDataPicker.updateYearRange(10)
 rememberPersianDataPicker.updateDisplayMonthNames(true)
 
-
 PersianDataPickerDialog(
     rememberPersianDataPicker,
     Modifier.fillMaxWidth(),
     onDismissRequest = { showDialog.value = false },
     onDateChanged = { year, month, day ->
         // do something...
-    })
-
+    }
+)
 ```
 
-
 https://user-images.githubusercontent.com/61207818/220583893-ffcb39e2-5f34-4141-a81d-ddfb0b7339cf.mp4
-
 
 Developed by Mahdi Razzaghi Ghaleh
