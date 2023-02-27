@@ -83,7 +83,7 @@ NumberPicker(
     value = selectedValue,
     range = 0..10,
     onValueChange = {
-        pickerVselectedValuealue = it
+        selectedValue = it
     }
 )
 
