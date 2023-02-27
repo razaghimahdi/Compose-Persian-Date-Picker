@@ -78,6 +78,24 @@ PersianDataPickerDialog(
     })
 
 ```
+### Extra Stuff
+
+Also you can use NumberPicker if you need though, Since Jetpack Compose doesn't have it by default yet!
+
+```Kotlin
+
+var selectedValue by remember { mutableStateOf(0) }
+
+NumberPicker(
+    value = selectedValue,
+    range = 0..10,
+    onValueChange = {
+        pickerVselectedValuealue = it
+    }
+)
+
+
+```
 
 
 https://user-images.githubusercontent.com/61207818/220583893-ffcb39e2-5f34-4141-a81d-ddfb0b7339cf.mp4
