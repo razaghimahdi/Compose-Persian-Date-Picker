@@ -111,6 +111,6 @@ NumberPicker(
 Contributions are welcome! If you find a bug or would like to create a new feature, please submit a pull request.
 
 ## License
-This library is licensed under the MIT License. See [LICENSE.txt](https://github.com/razaghimahdi/Compose-Persian-Date
+This library is licensed under the MIT License. See [LICENSE.txt](https://github.com/razaghimahdi/Compose-Persian-Date)
 
 Developed by Mahdi Razzaghi Ghaleh
