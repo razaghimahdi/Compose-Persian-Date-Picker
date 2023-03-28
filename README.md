@@ -1,25 +1,36 @@
 # Compose Persian Date Picker
 
-A library which allows you to have Persian date picker dialog by **Jetpack Compose**.
+Compose Persian Date Picker is a library that allows developers to add a Persian date picker to their Jetpack Compose apps. 
+The library provides a customizable dialog that lets users select a date using the Persian calendar,
+with options for updating the selected date and other settings.
+
 
 [![](https://jitpack.io/v/razaghimahdi/Compose-Persian-Date-Picker.svg)](https://jitpack.io/#razaghimahdi/Compose-Persian-Date-Picker)
 
-### Step 1. Add it in your project-level `build.gradle` or `settings.gradle` file:
 
+## Quickstart
+
+Here's a quick example of how to use the library:
+
+1. Add the JitPack repository to your project-level build.gradle or settings.gradle file:
+
+```groovy
 	allprojects {
 		repositories {
-			...
 			maven { url 'https://jitpack.io' }
 		}
 	}
+```
 
-### Step 2. Add the dependency
+2. Add the library dependency to your app-level build.gradle file:
 
-	dependencies {
-	        implementation 'com.github.razaghimahdi:Compose-Persian-Date-Picker:1.0.0'
-	} 
+```groovy
+    dependencies {
+            implementation 'com.github.razaghimahdi:Compose-Persian-Date-Picker:1.0.0'
+    } 
+```
 
-### Step 3. How to use
+3. Use the PersianDataPickerDialog in your app:
 
 ```kotlin
 
@@ -42,7 +53,7 @@ Button(onClick = { showDialog.value = true }) {
 }
 ```
 
-### Step 4. How to initial
+4. Customize the settings by calling methods on the rememberPersianDataPicker object:
 
 ```Kotlin
 val rememberPersianDataPicker = rememberPersianDataPicker()
@@ -71,9 +82,16 @@ PersianDataPickerDialog(
     }
 )
 ```
-### Extra Stuff
+## Example
+For a more detailed example, check out the [example app](https://github.com/razaghimahdi/Compose-Persian-Date-Picker/blob/main/app/src/main/java/mahdidev/composepersiandatepickerexample/MainActivity.kt) included in the repository.
 
-Also you can use NumberPicker if you need though, Since Jetpack Compose doesn't have it by default yet!
+## Screenshots
+https://user-images.githubusercontent.com/61207818/220583893-ffcb39e2-5f34-4141-a81d-ddfb0b7339cf.mp4
+
+## Extra Stuff
+
+This library also includes a `NumberPicker` component that developers can use to add a number picker to their Jetpack Compose apps. 
+The `NumberPicker` component is complementary to the `PersianDataPickerDialog` and provides a way to easily select a number value in the app.
 
 ```Kotlin
 
@@ -89,7 +107,10 @@ NumberPicker(
 
 
 ```
+## Contributing
+Contributions are welcome! If you find a bug or would like to create a new feature, please submit a pull request.
 
-https://user-images.githubusercontent.com/61207818/220583893-ffcb39e2-5f34-4141-a81d-ddfb0b7339cf.mp4
+## License
+This library is licensed under the MIT License. See [LICENSE.txt](https://github.com/razaghimahdi/Compose-Persian-Date
 
 Developed by Mahdi Razzaghi Ghaleh
