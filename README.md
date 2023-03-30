@@ -1,6 +1,6 @@
 # Compose Persian Date Picker
 
-`Compose Persian Date` Picker is a library that allows developers to add a Persian date picker to their Jetpack Compose apps. 
+`Compose Persian Date Picker` is a library that allows developers to add a Persian date picker to their Jetpack Compose apps. 
 The library provides a customizable dialog that lets users select a date using the Persian calendar,
 with options for updating the selected date and other settings.
 
