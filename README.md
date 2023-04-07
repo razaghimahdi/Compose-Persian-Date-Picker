@@ -30,16 +30,16 @@ Here's a quick example of how to use the library:
     } 
 ```
 
-3. Use the PersianDataPickerDialog in your app:
+3. Use the PersianDatePickerDialog in your app:
 
 ```kotlin
 
-val rememberPersianDataPicker = rememberPersianDataPicker()
+val rememberPersianDatePicker = rememberPersianDatePicker()
 val showDialog = remember { mutableStateOf(false) }
 
 if (showDialog.value) {
-    PersianDataPickerDialog(
-        rememberPersianDataPicker,
+    PersianDatePickerDialog(
+        rememberPersianDatePicker,
         Modifier.fillMaxWidth(),
         onDismissRequest = { showDialog.value = false },
         onDateChanged = { year, month, day ->
@@ -53,28 +53,28 @@ Button(onClick = { showDialog.value = true }) {
 }
 ```
 
-4. Customize the settings by calling methods on the rememberPersianDataPicker object:
+4. Customize the settings by calling methods on the rememberPersianDatePicker object:
 
 ```Kotlin
-val rememberPersianDataPicker = rememberPersianDataPicker()
+val rememberPersianDatePicker = rememberPersianDatePicker()
 
 // 3 ways to update date
-rememberPersianDataPicker.updateDate(date=Date())
-rememberPersianDataPicker.updateDate(timestamp = Date().time)
-rememberPersianDataPicker.updateDate(persianYear = 1401, persianMonth = 12, persianDay = 20)
+rememberPersianDatePicker.updateDate(date=Date())
+rememberPersianDatePicker.updateDate(timestamp = Date().time)
+rememberPersianDatePicker.updateDate(persianYear = 1401, persianMonth = 12, persianDay = 20)
 
-rememberPersianDataPicker.updateSelectedYear(1400)
-rememberPersianDataPicker.updateSelectedDay(10)
-rememberPersianDataPicker.updateSelectedMonth(5)
+rememberPersianDatePicker.updateSelectedYear(1400)
+rememberPersianDatePicker.updateSelectedDay(10)
+rememberPersianDatePicker.updateSelectedMonth(5)
 
-rememberPersianDataPicker.updateMaxYear(1420)
-rememberPersianDataPicker.updateMinYear(1350)
+rememberPersianDatePicker.updateMaxYear(1420)
+rememberPersianDatePicker.updateMinYear(1350)
 
-rememberPersianDataPicker.updateYearRange(10)
-rememberPersianDataPicker.updateDisplayMonthNames(true)
+rememberPersianDatePicker.updateYearRange(10)
+rememberPersianDatePicker.updateDisplayMonthNames(true)
 
-PersianDataPickerDialog(
-    rememberPersianDataPicker,
+PersianDatePickerDialog(
+    rememberPersianDatePicker,
     Modifier.fillMaxWidth(),
     onDismissRequest = { showDialog.value = false },
     onDateChanged = { year, month, day ->
@@ -91,7 +91,7 @@ https://user-images.githubusercontent.com/61207818/220583893-ffcb39e2-5f34-4141-
 ## Extra Stuff
 
 This library also includes a `NumberPicker` component that developers can use to add a number picker to their Jetpack Compose apps. 
-The `NumberPicker` component is complementary to the `PersianDataPickerDialog` and provides a way to easily select a number value in the app.
+The `NumberPicker` component is complementary to the `PersianDatePickerDialog` and provides a way to easily select a number value in the app.
 
 ```Kotlin
 
