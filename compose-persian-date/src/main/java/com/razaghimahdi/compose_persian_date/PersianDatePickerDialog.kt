@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 razaghimahdi (Mahdi Razzaghi Ghaleh)
+ * Copyright (C) 2023 razaghimahdi (Mahdi Razzaghi Ghaleh)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.razaghimahdi.compose_persian_date.core.NoPaddingAlertDialog
-import com.razaghimahdi.compose_persian_date.core.PersianDataPickerController
-import java.util.*
+import com.razaghimahdi.compose_persian_date.core.PersianDatePickerController
 
 @Composable
-fun PersianDataPickerDialog(
-    controller: PersianDataPickerController,
+fun PersianDatePickerDialog(
+    controller: PersianDatePickerController,
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit,
     onDateChanged: ((year: Int, month: Int, day: Int) -> Unit)? = null,

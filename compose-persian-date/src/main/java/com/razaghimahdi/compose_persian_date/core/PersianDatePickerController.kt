@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 razaghimahdi (Mahdi Razzaghi Ghaleh)
+ * Copyright (C) 2023 razaghimahdi (Mahdi Razzaghi Ghaleh)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 
 package com.razaghimahdi.compose_persian_date.core
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -26,12 +25,12 @@ import saman.zamani.persiandate.PersianDate
 import java.util.*
 
 @Composable
-fun rememberPersianDataPicker(): PersianDataPickerController {
-    return remember { PersianDataPickerController() }
+fun rememberPersianDatePicker(): PersianDatePickerController {
+    return remember { PersianDatePickerController() }
 }
 
 
-class PersianDataPickerController {
+class PersianDatePickerController {
 
 
     private var _date: MutableState<PersianDate> = mutableStateOf(PersianDate())
@@ -152,7 +151,7 @@ class PersianDataPickerController {
 
     fun getPersianDayOfWeekName(): String? = date.dayName()
 
-    fun getPersianLongDate(): String =
+    fun getPersianFullDate(): String =
         getPersianDayOfWeekName() + "  " + getPersianDay() + "  " + getPersianMonthName() + "  " + getPersianYear()
 
     fun getGregorianDate(): Date? = date.toDate()

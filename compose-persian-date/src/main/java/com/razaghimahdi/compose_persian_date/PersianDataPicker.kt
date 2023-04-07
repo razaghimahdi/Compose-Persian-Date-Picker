@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 razaghimahdi (Mahdi Razzaghi Ghaleh)
+ * Copyright (C) 2023 razaghimahdi (Mahdi Razzaghi Ghaleh)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,10 @@
 package com.razaghimahdi.compose_persian_date
 
 import android.graphics.Typeface
-import android.util.Log
-import android.view.LayoutInflater
 import android.widget.NumberPicker
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -32,19 +28,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.razaghimahdi.compose_persian_date.GlobalStyle.textColor
 import com.razaghimahdi.compose_persian_date.GlobalStyle.textSize
-import com.razaghimahdi.compose_persian_date.GlobalStyle.typeface
 import com.razaghimahdi.compose_persian_date.core.CustomNumberPicker
-import com.razaghimahdi.compose_persian_date.core.NumberPicker
-import com.razaghimahdi.compose_persian_date.core.PersianDataPickerController
+import com.razaghimahdi.compose_persian_date.core.PersianDatePickerController
 import com.razaghimahdi.compose_persian_date.util.Constants.persianMonthNames
-import com.razaghimahdi.compose_persian_date.util.Tools.changeDividerColor
 import com.razaghimahdi.compose_persian_date.util.Tools.getStringColor
 import com.razaghimahdi.compose_persian_date.util.Tools.toPersianNumber
 
 
 @Composable
 internal fun PersianDataPicker(
-    controller: PersianDataPickerController,
+    controller: PersianDatePickerController,
     modifier: Modifier = Modifier,
     onDateChanged: ((year: Int, month: Int, day: Int) -> Unit)? = null
 ) {
