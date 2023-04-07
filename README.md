@@ -26,7 +26,7 @@ Here's a quick example of how to use the library:
 
 ```groovy
     dependencies {
-            implementation 'com.github.razaghimahdi:Compose-Persian-Date-Picker:1.0.0'
+            implementation 'com.github.razaghimahdi:Compose-Persian-Date-Picker:1.0.1'
     } 
 ```
 
@@ -84,6 +84,23 @@ PersianDatePickerDialog(
 ```
 ## Example
 For a more detailed example, check out the [example app](https://github.com/razaghimahdi/Compose-Persian-Date-Picker/blob/main/app/src/main/java/mahdidev/composepersiandatepickerexample/MainActivity.kt) included in the repository.
+
+## Functions
+rememberPersianDatePicker has these functions that can be useful:
+| Function Name | Description |
+| --- | --- |
+| `getPersianYear()` | Returns the Persian year of the current date. |
+| `getPersianMonth()` | Returns the Persian month (1-12) of the current date. |
+| `getPersianDay()` | Returns the Persian day (1-31) of the current date. |
+| `getGregorianYear()` | Returns the Gregorian year of the current date. |
+| `getGregorianMonth()` | Returns the Gregorian month (1-12) of the current date. |
+| `getGregorianDay()` |Returns the Gregorian day (1-31) of the current date. |
+| `getDayOfWeek()` | Returns the day of the week (1-7) of the current date. |
+| `getPersianMonthName()` | Returns the name of the Persian month of the current date (e.g. "اردیبهشت"). |
+| `getPersianDayOfWeekName()` | Returns the name of the day of the week in Persian of the current date (e.g. "شنبه"). |
+| `getPersianFullDate()` | Returns the full Persian date of the current date in the format "dayOfWeek day monthName year" (e.g. "پنج‌شنبه  10  شهریور  1401"). |
+| `getGregorianDate()` | Returns the current date in the Gregorian calendar as a Date object. |
+| `getTimestamp()` | Returns the Unix timestamp of the current date in milliseconds. |
 
 ## Screenshots
 https://user-images.githubusercontent.com/61207818/220583893-ffcb39e2-5f34-4141-a81d-ddfb0b7339cf.mp4
