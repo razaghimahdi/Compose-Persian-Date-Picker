@@ -83,7 +83,7 @@ PersianDatePickerDialog(
 )
 ```
 ## Example
-For a more detailed example, check out the [example app](https://github.com/razaghimahdi/Compose-Persian-Date-Picker/blob/main/app/src/main/java/mahdidev/composepersiandatepickerexample/MainActivity.kt) included in the repository.
+For a more detailed example, check out the [example app](https://github.com/razaghimahdi/Compose-Persian-Date-Picker/blob/master/app/src/main/java/com/razaghimahdi/composepersiandatepicker/MainActivity.kt) included in the repository.
 
 ## Functions
 rememberPersianDatePicker has these functions that can be useful:
