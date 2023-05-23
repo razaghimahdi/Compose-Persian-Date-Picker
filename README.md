@@ -4,6 +4,9 @@
 The library provides a customizable dialog that lets users select a date using the Persian calendar,
 with options for updating the selected date and other settings.
 
+## Give a Star! ⭐
+If you like or are using this project to learn or start your solution, please give it a star. Thanks!
+
 
 [![](https://jitpack.io/v/razaghimahdi/Compose-Persian-Date-Picker.svg)](https://jitpack.io/#razaghimahdi/Compose-Persian-Date-Picker)
 
