@@ -17,10 +17,12 @@
 package com.razaghimahdi.compose_persian_date
 
 import android.graphics.Typeface
+import android.util.Log
 import android.widget.NumberPicker
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -41,6 +43,7 @@ internal fun PersianDataPicker(
     modifier: Modifier = Modifier,
     onDateChanged: ((year: Int, month: Int, day: Int) -> Unit)? = null
 ) {
+
 
     controller.initDate()
 
@@ -105,6 +108,8 @@ internal fun PersianDataPicker(
             modifier = Modifier.wrapContentWidth(),
             formatter = { i -> i.toString().toPersianNumber() },
             onValueChangedListener = { picker, oldVal, newVal ->
+                Log.i("TAG", "PersianDataPicker BUGFOUND oldVal: "+oldVal)
+                Log.i("TAG", "PersianDataPicker BUGFOUND newVal: "+newVal)
                 controller.updateFromCustomNumberPicker(newYear = newVal)
                 if (onDateChanged != null) {
                     onDateChanged(

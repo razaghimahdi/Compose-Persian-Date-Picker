@@ -17,6 +17,7 @@
 
 package com.razaghimahdi.compose_persian_date.core
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -70,15 +71,15 @@ class PersianDatePickerController {
 
 
 
-    fun updateSelectedYear(value: Int) {
+   private fun updateSelectedYear(value: Int) {
         _selectedYear.value = value
     }
 
-    fun updateSelectedMonth(value: Int) {
+    private fun updateSelectedMonth(value: Int) {
         _selectedMonth.value = value
     }
 
-    fun updateSelectedDay(value: Int) {
+    private fun updateSelectedDay(value: Int) {
         _selectedDay.value = value
     }
 
