@@ -29,7 +29,7 @@ Here's a quick example of how to use the library:
 
 ```groovy
     dependencies {
-            implementation 'com.github.razaghimahdi:Compose-Persian-Date-Picker:1.0.1'
+            implementation 'com.github.razaghimahdi:Compose-Persian-Date-Picker:1.0.2'
     } 
 ```
 
@@ -65,10 +65,6 @@ val rememberPersianDatePicker = rememberPersianDatePicker()
 rememberPersianDatePicker.updateDate(date=Date())
 rememberPersianDatePicker.updateDate(timestamp = Date().time)
 rememberPersianDatePicker.updateDate(persianYear = 1401, persianMonth = 12, persianDay = 20)
-
-rememberPersianDatePicker.updateSelectedYear(1400)
-rememberPersianDatePicker.updateSelectedDay(10)
-rememberPersianDatePicker.updateSelectedMonth(5)
 
 rememberPersianDatePicker.updateMaxYear(1420)
 rememberPersianDatePicker.updateMinYear(1350)
