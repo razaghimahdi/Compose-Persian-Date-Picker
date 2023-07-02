@@ -60,7 +60,7 @@ fun PersianDatePickerDialog(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextButton(onClick = { controller.resetDate() }) {
+                TextButton(onClick = { controller.resetDate(onDateChanged) }) {
                     Text(text = "امروز", style = textButtonStyle)
                 }
                 Row(

@@ -119,11 +119,18 @@ class PersianDatePickerController {
         _date.value = PersianDate(date)
     }
 
-    internal fun resetDate() {
+    internal fun resetDate(onDateChanged: ((year: Int, month: Int, day: Int) -> Unit)? = null) {
         _date.value = PersianDate()
         updateSelectedYear(date.shYear)
         updateSelectedMonth(date.shMonth)
         updateSelectedDay(date.shDay)
+        if (onDateChanged != null) {
+            onDateChanged(
+                date.shYear,
+                date.shMonth,
+                date.shDay,
+            )
+        }
     }
 
     fun updateDate(persianYear: Int, persianMonth: Int, persianDay: Int) {
