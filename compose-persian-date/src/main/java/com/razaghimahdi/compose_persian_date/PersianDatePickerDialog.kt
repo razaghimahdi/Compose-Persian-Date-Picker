@@ -17,7 +17,6 @@
 
 package com.razaghimahdi.compose_persian_date
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -55,7 +54,7 @@ fun PersianDatePickerDialog(
         contentColor = contentColor,
         properties = properties,
         title = { },
-        text = { PersianDataPicker(controller, modifier.padding(8.dp), onDateChanged,contentColor,) },
+        text = { PersianDatePicker(controller, modifier.padding(8.dp), onDateChanged,contentColor,) },
         buttons = {
             Row(
                 modifier = Modifier.fillMaxWidth(),

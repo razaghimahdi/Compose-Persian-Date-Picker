@@ -17,14 +17,14 @@
 package com.razaghimahdi.compose_persian_date
 
 import android.graphics.Typeface
-import android.util.Log
 import android.widget.NumberPicker
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -35,13 +35,15 @@ import com.razaghimahdi.compose_persian_date.core.PersianDatePickerController
 import com.razaghimahdi.compose_persian_date.util.Constants.persianMonthNames
 import com.razaghimahdi.compose_persian_date.util.Tools.getStringColor
 import com.razaghimahdi.compose_persian_date.util.Tools.toPersianNumber
+import com.razaghimahdi.compose_persian_date.util.changeTextColor
 
 
 @Composable
-internal fun PersianDataPicker(
+internal fun PersianDatePicker(
     controller: PersianDatePickerController,
     modifier: Modifier = Modifier,
-    onDateChanged: ((year: Int, month: Int, day: Int) -> Unit)? = null
+    onDateChanged: ((year: Int, month: Int, day: Int) -> Unit)? = null,
+    contentColor: Color
 ) {
 
 
@@ -71,6 +73,7 @@ internal fun PersianDataPicker(
             minValue = 1,
             maxValue = controller.maxDay,
             selectedValue = controller.selectedDay,
+            contentColor = contentColor
         )
 
         Spacer(
@@ -95,7 +98,8 @@ internal fun PersianDataPicker(
             minValue = 1,
             maxValue = if (controller.maxMonth > 0) controller.maxMonth else 12,
             selectedValue = controller.selectedMonth,
-            displayedValues = if (controller.displayMonthNames) persianMonthNames else null
+            displayedValues = if (controller.displayMonthNames) persianMonthNames else null,
+            contentColor = contentColor
         )
 
         Spacer(
@@ -108,8 +112,6 @@ internal fun PersianDataPicker(
             modifier = Modifier.wrapContentWidth(),
             formatter = { i -> i.toString().toPersianNumber() },
             onValueChangedListener = { picker, oldVal, newVal ->
-                Log.i("TAG", "PersianDataPicker BUGFOUND oldVal: "+oldVal)
-                Log.i("TAG", "PersianDataPicker BUGFOUND newVal: "+newVal)
                 controller.updateFromCustomNumberPicker(newYear = newVal)
                 if (onDateChanged != null) {
                     onDateChanged(
@@ -121,7 +123,8 @@ internal fun PersianDataPicker(
             },
             minValue = controller.minYear,
             maxValue = controller.maxYear,
-            selectedValue = controller.selectedYear
+            selectedValue = controller.selectedYear,
+            contentColor = contentColor
         )
 
     }
@@ -139,7 +142,8 @@ fun ComposeCustomNumberPicker(
     selectedValue: Int,
     // dividerColor: Color = Color.Red,
     displayedValues: Array<String>? = null,
-    textStyle: TextStyle = LocalTextStyle.current
+    textStyle: TextStyle = LocalTextStyle.current,
+    contentColor: Color
 ) {
 
 
@@ -168,6 +172,7 @@ fun ComposeCustomNumberPicker(
             numberPicker.minValue = minValue
             numberPicker.maxValue = maxValue
             numberPicker.value = selectedValue
+            numberPicker.changeTextColor( contentColor.toArgb())
             numberPicker.setOnValueChangedListener(onValueChangedListener)
             if (displayedValues != null) numberPicker.displayedValues = displayedValues
 
@@ -190,3 +195,4 @@ internal object GlobalStyle {
     internal var textColor: Int? = null
 
 }
+
