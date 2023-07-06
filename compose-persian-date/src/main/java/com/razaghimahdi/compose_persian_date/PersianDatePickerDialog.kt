@@ -17,6 +17,7 @@
 
 package com.razaghimahdi.compose_persian_date
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -45,6 +46,7 @@ fun PersianDatePickerDialog(
     properties: DialogProperties = DialogProperties()
 ) {
 
+
     NoPaddingAlertDialog(
         onDismissRequest = onDismissRequest,
         modifier = modifier,
@@ -53,7 +55,7 @@ fun PersianDatePickerDialog(
         contentColor = contentColor,
         properties = properties,
         title = { },
-        text = { PersianDataPicker(controller, modifier.padding(8.dp), onDateChanged) },
+        text = { PersianDataPicker(controller, modifier.padding(8.dp), onDateChanged,contentColor,) },
         buttons = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -61,7 +63,7 @@ fun PersianDatePickerDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextButton(onClick = { controller.resetDate(onDateChanged) }) {
-                    Text(text = "امروز", style = textButtonStyle)
+                    Text(text = "امروز", style = textButtonStyle,color = contentColor)
                 }
                 Row(
                     modifier = Modifier.wrapContentWidth(),
@@ -69,7 +71,7 @@ fun PersianDatePickerDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextButton(onClick = onDismissRequest) {
-                        Text(text = dismissTitle, style = textButtonStyle)
+                        Text(text = dismissTitle, style = textButtonStyle,color = contentColor)
                     }
                     /* TextButton(onClick = {
                          onDismissRequest()
