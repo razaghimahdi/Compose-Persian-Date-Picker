@@ -29,7 +29,7 @@ Here's a quick example of how to use the library:
 
 ```groovy
     dependencies {
-            implementation 'com.github.razaghimahdi:Compose-Persian-Date-Picker:1.0.3'
+            implementation 'com.github.razaghimahdi:Compose-Persian-Date-Picker:1.0.4'
     } 
 ```
 
