@@ -10,7 +10,6 @@ If you like or are using this project to learn or start your solution, please gi
 
 [![](https://jitpack.io/v/razaghimahdi/Compose-Persian-Date-Picker.svg)](https://jitpack.io/#razaghimahdi/Compose-Persian-Date-Picker)
 
-
 ## Quickstart
 
 Here's a quick example of how to use the library:
@@ -29,7 +28,7 @@ Here's a quick example of how to use the library:
 
 ```groovy
     dependencies {
-            implementation 'com.github.razaghimahdi:Compose-Persian-Date-Picker:1.0.4'
+            implementation 'com.github.razaghimahdi:Compose-Persian-Date-Picker:1.1.0'
     } 
 ```
 
@@ -37,8 +36,11 @@ Here's a quick example of how to use the library:
 
 ```kotlin
 
-val rememberPersianDatePicker = rememberPersianDatePicker()
+val coroutine = rememberCoroutineScope()
+val rememberPersianDialogDatePicker = rememberDialogDatePicker()
+val rememberPersianBottomSheetDatePickerController = rememberDialogDatePicker()
 val showDialog = remember { mutableStateOf(false) }
+val bottomSheetState =  rememberModalBottomSheetState()
 
 if (showDialog.value) {
     PersianDatePickerDialog(
@@ -50,27 +52,67 @@ if (showDialog.value) {
         })
 }
 
+if (bottomSheetState.isVisible) {
+    DatePickerModalBottomSheet(
+        modifier = Modifier
+            .fillMaxSize(),
+        sheetState = bottomSheetState,
+        controller = rememberPersianBottomSheetDatePickerController,
+        onDismissRequest = {
+            coroutine.launch {
+                bottomSheetState.hide()
+            }
+        }
+    )
+}
+
 
 Button(onClick = { showDialog.value = true }) {
     Text(text = "نمایش")
+}
+
+Button(onClick = { coroutine.launch { bottomSheetState.show() } }) {
+    Text(text = "نمایش باتم شت")
 }
 ```
 
 4. Customize the settings by calling methods on the rememberPersianDatePicker object:
 
 ```Kotlin
-val rememberPersianDatePicker = rememberPersianDatePicker()
+
+val rememberPersianDialogDatePicker = rememberDialogDatePicker()
+val rememberPersianBottomSheetDatePickerController = rememberDialogDatePicker()
 
 // 3 ways to update date
-rememberPersianDatePicker.updateDate(date=Date())
-rememberPersianDatePicker.updateDate(timestamp = Date().time)
-rememberPersianDatePicker.updateDate(persianYear = 1401, persianMonth = 12, persianDay = 20)
 
-rememberPersianDatePicker.updateMaxYear(1420)
-rememberPersianDatePicker.updateMinYear(1350)
+LaunchedEffect(key1 = Unit) {
 
-rememberPersianDatePicker.updateYearRange(10)
-rememberPersianDatePicker.updateDisplayMonthNames(true)
+    rememberPersianDialogDatePicker.updateDate(date = Date())
+    rememberPersianDialogDatePicker.updateDate(timestamp = Date().time)
+    rememberPersianDialogDatePicker.updateDate(
+        persianYear = 1403,
+        persianMonth = 7,
+        persianDay = 20
+    )
+
+    rememberPersianBottomSheetDatePickerController.updateDate(date = Date())
+    rememberPersianBottomSheetDatePickerController.updateDate(timestamp = Date().time)
+    rememberPersianBottomSheetDatePickerController.updateDate(
+        persianYear = 1403,
+        persianMonth = 7,
+        persianDay = 20
+    )
+}
+
+
+rememberPersianDialogDatePicker.updateMaxYear(1420)
+rememberPersianDialogDatePicker.updateMinYear(1395)
+rememberPersianDialogDatePicker.updateYearRange(10)
+rememberPersianDialogDatePicker.updateDisplayMonthNames(false)
+
+
+rememberPersianBottomSheetDatePickerController.updateMaxYear(1420)
+rememberPersianBottomSheetDatePickerController.updateMinYear(1395)
 
 PersianDatePickerDialog(
     rememberPersianDatePicker,
@@ -80,6 +122,19 @@ PersianDatePickerDialog(
         // do something...
     }
 )
+
+DatePickerModalBottomSheet(
+    modifier = Modifier
+        .fillMaxSize(),
+    sheetState = bottomSheetState,
+    controller = rememberPersianBottomSheetDatePickerController,
+    onDismissRequest = {
+        coroutine.launch {
+            bottomSheetState.hide()
+        }
+    }
+)
+
 ```
 ## Example
 For a more detailed example, check out the [example app](https://github.com/razaghimahdi/Compose-Persian-Date-Picker/blob/master/app/src/main/java/com/razaghimahdi/composepersiandatepicker/MainActivity.kt) included in the repository.

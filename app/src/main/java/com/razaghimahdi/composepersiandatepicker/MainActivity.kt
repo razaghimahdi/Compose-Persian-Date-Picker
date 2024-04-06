@@ -1,68 +1,112 @@
 package com.razaghimahdi.composepersiandatepicker
 
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.razaghimahdi.compose_persian_date.PersianDatePickerDialog
-import com.razaghimahdi.compose_persian_date.core.rememberPersianDatePicker
+import androidx.compose.ui.unit.dp
+import com.razaghimahdi.compose_persian_date.bottom_sheet.DatePickerLinearModalBottomSheet
+import com.razaghimahdi.compose_persian_date.core.components.rememberDialogDatePicker
+import com.razaghimahdi.compose_persian_date.dialog.PersianLinearDatePickerDialog
 import com.razaghimahdi.composepersiandatepicker.ui.theme.ComposePersianDatePickerTheme
-import java.time.LocalDate
-import java.util.*
+import kotlinx.coroutines.launch
+import java.util.Date
+
 
 class MainActivity : ComponentActivity() {
+
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             ComposePersianDatePickerTheme {
-                val rememberPersianDatePicker = rememberPersianDatePicker()
+                val coroutine = rememberCoroutineScope()
+                val rememberPersianDialogDatePicker = rememberDialogDatePicker()
+                val rememberPersianBottomSheetDatePickerController = rememberDialogDatePicker()
                 val showDialog = remember { mutableStateOf(false) }
-
-                 rememberPersianDatePicker.updateDate(date = Date())
-                 rememberPersianDatePicker.updateDate(timestamp = Date().time)
-                rememberPersianDatePicker.updateDate(
-                    persianYear = 1403,
-                    persianMonth = 7,
-                    persianDay = 20
-                )
+                val bottomSheetState = rememberModalBottomSheetState()
 
 
-                rememberPersianDatePicker.updateMaxYear(1420)
-                rememberPersianDatePicker.updateMinYear(1395)
-                rememberPersianDatePicker.updateYearRange(10)
-                rememberPersianDatePicker.updateDisplayMonthNames(false)
+                LaunchedEffect(key1 = Unit) {
+
+                    rememberPersianDialogDatePicker.updateDate(date = Date())
+                    rememberPersianDialogDatePicker.updateDate(timestamp = Date().time)
+                    rememberPersianDialogDatePicker.updateDate(
+                        persianYear = 1403,
+                        persianMonth = 7,
+                        persianDay = 20
+                    )
+
+                    rememberPersianBottomSheetDatePickerController.updateDate(date = Date())
+                    rememberPersianBottomSheetDatePickerController.updateDate(timestamp = Date().time)
+                    rememberPersianBottomSheetDatePickerController.updateDate(
+                        persianYear = 1403,
+                        persianMonth = 7,
+                        persianDay = 20
+                    )
+                }
+
+
+                rememberPersianDialogDatePicker.updateMaxYear(1420)
+                rememberPersianDialogDatePicker.updateMinYear(1395)
+                rememberPersianDialogDatePicker.updateYearRange(10)
+                rememberPersianDialogDatePicker.updateDisplayMonthNames(false)
+
+
+                rememberPersianBottomSheetDatePickerController.updateMaxYear(1420)
+                rememberPersianBottomSheetDatePickerController.updateMinYear(1395)
+
+                if (showDialog.value) {
+                    PersianLinearDatePickerDialog(
+                        rememberPersianDialogDatePicker,
+                        Modifier.fillMaxWidth(),
+                        onDismissRequest = { showDialog.value = false },
+                        onDateChanged = { year, month, day ->
+                            // do something...
+                            Log.i(
+                                "TAG",
+                                "onCreate getPersianFullDate: " + rememberPersianDialogDatePicker.getPersianFullDate()
+                            )
+                        })
+                }
+
+                if (bottomSheetState.isVisible) {
+                    DatePickerLinearModalBottomSheet(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        sheetState = bottomSheetState,
+                        controller = rememberPersianBottomSheetDatePickerController,
+                        onDismissRequest = {
+                            coroutine.launch {
+                                bottomSheetState.hide()
+                            }
+                        }
+                    )
+                }
 
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
+                    color = MaterialTheme.colorScheme.background
                 ) {
-                    if (showDialog.value) {
-                        PersianDatePickerDialog(
-                            rememberPersianDatePicker,
-                            Modifier.fillMaxWidth(),
-                            onDismissRequest = { showDialog.value = false },
-                            onDateChanged = { year, month, day ->
-                                // do something...
-                                Log.i("TAG", "onCreate getPersianFullDate: "+rememberPersianDatePicker.getPersianFullDate())
-                            })
-                    }
-
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -70,11 +114,16 @@ class MainActivity : ComponentActivity() {
                     ) {
 
                         Button(onClick = { showDialog.value = true }) {
-                            Text(text = "نمایش")
+                            Text(text = "نمایش دیالوگ")
                         }
+                        Text(text = rememberPersianDialogDatePicker.getPersianFullDate())
 
+                        Spacer(modifier = Modifier.size(32.dp))
 
-                        Text(text = rememberPersianDatePicker.getPersianFullDate())
+                        Button(onClick = { coroutine.launch { bottomSheetState.show() } }) {
+                            Text(text = "نمایش باتم شت")
+                        }
+                        Text(text = rememberPersianBottomSheetDatePickerController.getPersianFullDate())
                     }
 
                 }

@@ -11,9 +11,8 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.NumberPicker
 import androidx.compose.ui.graphics.Color
-import com.razaghimahdi.compose_persian_date.GlobalStyle
 
-
+/*
 class CustomNumberPicker : NumberPicker {
 /*
     var typeface: Typeface? = null
@@ -63,4 +62,4 @@ class CustomNumberPicker : NumberPicker {
             if (GlobalStyle.textColor != null) view.setTextColor(GlobalStyle.textColor!!)
         }
     }
-}
+}*/

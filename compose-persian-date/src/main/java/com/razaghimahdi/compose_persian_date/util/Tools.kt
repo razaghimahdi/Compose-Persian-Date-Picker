@@ -27,11 +27,31 @@ import android.widget.NumberPicker
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import java.lang.reflect.Field
+import java.util.Calendar
+import java.util.Date
 
 
 internal object Tools {
     private val persianNumbers = charArrayOf('۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹')
     private val englishNumbers = charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
+
+
+
+    fun Date.isDateToday(): Boolean {
+        val calendar = Calendar.getInstance()
+        val today = Calendar.getInstance()
+
+        calendar.time = this
+        today.set(Calendar.HOUR_OF_DAY, 0)
+        today.set(Calendar.MINUTE, 0)
+        today.set(Calendar.SECOND, 0)
+        today.set(Calendar.MILLISECOND, 0)
+
+        return calendar.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
+                calendar.get(Calendar.MONTH) == today.get(Calendar.MONTH) &&
+                calendar.get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH)
+    }
+
 
     internal fun String.toPersianNumber(): String {
         if (this.isEmpty()) return ""
