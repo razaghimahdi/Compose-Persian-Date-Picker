@@ -51,13 +51,11 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 }
 
-
 afterEvaluate {
     publishing {
         publications {
-            create<MavenPublication>("release") {
-                from(components["release"])
-
+            create<MavenPublication>("maven") {
+                from (components["release"])
                 groupId = "com.github.razaghimahdi"
                 artifactId = "compose-persian-date-picker"
                 version = "1.1.0"

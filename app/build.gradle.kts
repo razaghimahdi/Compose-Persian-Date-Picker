@@ -64,7 +64,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // implementation 'com.github.razaghimahdi:Compose-Persian-Date-Picker:1.1.0'
+    implementation("com.github.razaghimahdi:Compose-Persian-Date-Picker:1.1.0")
 
-    implementation(project(":compose-persian-date"))
+    //implementation(project(":compose-persian-date"))
 }
