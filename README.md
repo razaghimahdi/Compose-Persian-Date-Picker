@@ -38,7 +38,7 @@ Here's a quick example of how to use the library:
     } 
 ```
 
-3. Use the PersianDatePickerDialog in your app:
+3. Use the Persian Date Picker in your app:
 
 ```kotlin
 
@@ -49,7 +49,7 @@ val showDialog = remember { mutableStateOf(false) }
 val bottomSheetState =  rememberModalBottomSheetState()
 
 if (showDialog.value) {
-    PersianDatePickerDialog(
+    PersianLinearDatePickerDialog(
         rememberPersianDatePicker,
         Modifier.fillMaxWidth(),
         onDismissRequest = { showDialog.value = false },
@@ -59,7 +59,7 @@ if (showDialog.value) {
 }
 
 if (bottomSheetState.isVisible) {
-    DatePickerModalBottomSheet(
+    DatePickerLinearModalBottomSheet(
         modifier = Modifier
             .fillMaxSize(),
         sheetState = bottomSheetState,
@@ -120,7 +120,7 @@ rememberPersianDialogDatePicker.updateDisplayMonthNames(false)
 rememberPersianBottomSheetDatePickerController.updateMaxYear(1420)
 rememberPersianBottomSheetDatePickerController.updateMinYear(1395)
 
-PersianDatePickerDialog(
+PersianLinearDatePickerDialog(
     rememberPersianDatePicker,
     Modifier.fillMaxWidth(),
     onDismissRequest = { showDialog.value = false },
@@ -129,7 +129,7 @@ PersianDatePickerDialog(
     }
 )
 
-DatePickerModalBottomSheet(
+DatePickerLinearModalBottomSheet(
     modifier = Modifier
         .fillMaxSize(),
     sheetState = bottomSheetState,
