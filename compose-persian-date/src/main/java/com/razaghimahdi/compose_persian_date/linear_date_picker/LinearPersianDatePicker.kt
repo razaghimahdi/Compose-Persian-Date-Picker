@@ -17,7 +17,11 @@
 package com.razaghimahdi.compose_persian_date.linear_date_picker
 
 import androidx.annotation.FontRes
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,9 +29,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.razaghimahdi.compose_persian_date.core.components.ComposeCustomNumberPicker
+import com.razaghimahdi.compose_persian_date.core.components.NumberPicker
 import com.razaghimahdi.compose_persian_date.core.components.PersianDatePickerController
 import com.razaghimahdi.compose_persian_date.util.Constants.persianMonthNames
-
 
 
 @Composable
@@ -50,14 +54,15 @@ internal fun LinearPersianDatePicker(
 
         ComposeCustomNumberPicker(
             modifier = Modifier.weight(1F),
-            onValueChangedListener = { picker, oldVal, newVal ->
-                controller.updateFromCustomNumberPicker(newDay = newVal)
-                if (onDateChanged != null) {
-                    onDateChanged(
-                        controller.selectedYear, controller.selectedMonth, controller.selectedDay
-                    )
+            onValueChangedListener = object : NumberPicker.OnValueChangeListener {
+                override fun onValueChange(picker: NumberPicker?, oldVal: Int, newVal: Int) {
+                    controller.updateFromCustomNumberPicker(newDay = newVal)
+                    if (onDateChanged != null) {
+                        onDateChanged(
+                            controller.selectedYear, controller.selectedMonth, controller.selectedDay
+                        )
+                    }
                 }
-
             },
             minValue = 1,
             maxValue = controller.maxDay,
@@ -76,12 +81,14 @@ internal fun LinearPersianDatePicker(
 
         ComposeCustomNumberPicker(
             modifier = Modifier.weight(1F),
-            onValueChangedListener = { picker, oldVal, newVal ->
-                controller.updateFromCustomNumberPicker(newMonth = newVal)
-                if (onDateChanged != null) {
-                    onDateChanged(
-                        controller.selectedYear, controller.selectedMonth, controller.selectedDay
-                    )
+            onValueChangedListener = object : NumberPicker.OnValueChangeListener {
+                override fun onValueChange(picker: NumberPicker?, oldVal: Int, newVal: Int) {
+                    controller.updateFromCustomNumberPicker(newMonth = newVal)
+                    if (onDateChanged != null) {
+                        onDateChanged(
+                            controller.selectedYear, controller.selectedMonth, controller.selectedDay
+                        )
+                    }
                 }
             },
             minValue = 1,
@@ -103,12 +110,14 @@ internal fun LinearPersianDatePicker(
             modifier = Modifier
                 .weight(1F)
                 .wrapContentHeight(),
-            onValueChangedListener = { picker, oldVal, newVal ->
-                controller.updateFromCustomNumberPicker(newYear = newVal)
-                if (onDateChanged != null) {
-                    onDateChanged(
-                        controller.selectedYear, controller.selectedMonth, controller.selectedDay
-                    )
+            onValueChangedListener = object : NumberPicker.OnValueChangeListener {
+                override fun onValueChange(picker: NumberPicker?, oldVal: Int, newVal: Int) {
+                    controller.updateFromCustomNumberPicker(newYear = newVal)
+                    if (onDateChanged != null) {
+                        onDateChanged(
+                            controller.selectedYear, controller.selectedMonth, controller.selectedDay
+                        )
+                    }
                 }
             },
             minValue = controller.minYear,

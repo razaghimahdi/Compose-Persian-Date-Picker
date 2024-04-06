@@ -37,13 +37,13 @@ internal fun ComposeCustomNumberPicker(
         numberPicker.value = selectedValue
         numberPicker.dividerColor = dividerColor.toArgb()
         numberPicker.textColor = unSelectedTextColor.toArgb()
-        numberPicker.setSelectedTextColor(selectedTextColor.toArgb())
+        numberPicker.selectedTextColor = selectedTextColor.toArgb()
         numberPicker.textSize = unSelectedTextStyle.fontSize.value * 2
-        numberPicker.setSelectedTextSize(selectedTextStyle.fontSize.value * 2)
+        numberPicker.selectedTextSize = selectedTextStyle.fontSize.value * 2
         numberPicker.isFadingEdgeEnabled = false;
         if (font != null) {
             numberPicker.setSelectedTypeface(ResourcesCompat.getFont(context, font))
-            numberPicker.setTypeface(ResourcesCompat.getFont(context, font))
+            numberPicker.typeface = ResourcesCompat.getFont(context, font)
         };
         numberPicker.setOnValueChangedListener(onValueChangedListener)
         if (displayedValues != null) {
