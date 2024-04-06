@@ -10,6 +10,12 @@ If you like or are using this project to learn or start your solution, please gi
 
 [![](https://jitpack.io/v/razaghimahdi/Compose-Persian-Date-Picker.svg)](https://jitpack.io/#razaghimahdi/Compose-Persian-Date-Picker)
 
+
+| Bottom Sheet                               | Dialog                                     |
+|--------------------------------------------|--------------------------------------------|
+| <img src="screenshots/2.jpg" width="300"/> | <img src="screenshots/1.jpg" width="300"/> |
+
+
 ## Quickstart
 
 Here's a quick example of how to use the library:
@@ -159,25 +165,9 @@ rememberPersianDatePicker has these functions that can be useful:
 ## Screenshots
 https://user-images.githubusercontent.com/61207818/220583893-ffcb39e2-5f34-4141-a81d-ddfb0b7339cf.mp4
 
-## Extra Stuff
+## Future Plan
+Soon there will be more date picker with Such as Range Date Picker, Multi Date Picker and...
 
-This library also includes a `NumberPicker` component that developers can use to add a number picker to their Jetpack Compose apps. 
-The `NumberPicker` component is complementary to the `PersianDatePickerDialog` and provides a way to easily select a number value in the app.
-
-```Kotlin
-
-var selectedValue by remember { mutableStateOf(0) }
-
-NumberPicker(
-    value = selectedValue,
-    range = 0..10,
-    onValueChange = {
-        selectedValue = it
-    }
-)
-
-
-```
 ## Contributing
 Contributions are welcome! If you find a bug or would like to create a new feature, please submit a pull request.
 
