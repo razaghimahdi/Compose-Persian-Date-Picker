@@ -13,7 +13,7 @@ If you like or are using this project to learn or start your solution, please gi
 
 | Bottom Sheet                               | Dialog                                     |
 |--------------------------------------------|--------------------------------------------|
-| <img src="screenshots/2.jpg" width="300"/> | <img src="screenshots/1.jpg" width="300"/> |
+| <img src="screenshots/2.png" width="300"/> | <img src="screenshots/1.png" width="300"/> |
 
 
 ## Quickstart
