@@ -163,7 +163,8 @@ rememberPersianDatePicker has these functions that can be useful:
 | `getTimestamp()` | Returns the Unix timestamp of the current date in milliseconds. |
 
 ## Screenshots
-https://user-images.githubusercontent.com/61207818/220583893-ffcb39e2-5f34-4141-a81d-ddfb0b7339cf.mp4
+[1.webm](https://github.com/razaghimahdi/Compose-Persian-Date-Picker/assets/61207818/d1626677-b373-4860-aad5-c6758ffb88d0)
+
 
 ## Future Plan
 Soon there will be more date picker with Such as Range Date Picker, Multi Date Picker and...
