@@ -16,6 +16,8 @@
 
 package com.razaghimahdi.compose_persian_date.util
 
+import androidx.compose.ui.unit.dp
+
 object Constants {
 
 
@@ -33,5 +35,7 @@ object Constants {
         "\u0628\u0647\u0645\u0646",  // Bahman
         "\u0627\u0633\u0641\u0646\u062f" // Esfand
     )
+
+     val TEXT_CALENDAR_PADDING = 12.dp
 
 }
