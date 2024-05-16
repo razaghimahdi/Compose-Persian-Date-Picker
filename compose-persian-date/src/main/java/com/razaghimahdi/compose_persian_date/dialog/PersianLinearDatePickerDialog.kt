@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.razaghimahdi.compose_persian_date.linear_date_picker.LinearPersianDatePicker
 import com.razaghimahdi.compose_persian_date.core.components.NoPaddingAlertDialog
-import com.razaghimahdi.compose_persian_date.core.components.PersianDatePickerController
+import com.razaghimahdi.compose_persian_date.core.controller.PersianDatePickerController
 
 @Composable
 fun PersianLinearDatePickerDialog(

@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.razaghimahdi.compose_persian_date.linear_date_picker.LinearPersianDatePicker
 import com.razaghimahdi.compose_persian_date.core.components.AppButton
-import com.razaghimahdi.compose_persian_date.core.components.PersianDatePickerController
+import com.razaghimahdi.compose_persian_date.core.controller.PersianDatePickerController
 import com.razaghimahdi.compose_persian_date.core.components.TextButton
 import com.razaghimahdi.compose_persian_date.util.Tools.isDateToday
 

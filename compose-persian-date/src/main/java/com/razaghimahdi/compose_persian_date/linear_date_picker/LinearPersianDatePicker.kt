@@ -30,7 +30,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.razaghimahdi.compose_persian_date.core.components.ComposeCustomNumberPicker
 import com.razaghimahdi.compose_persian_date.core.components.NumberPicker
-import com.razaghimahdi.compose_persian_date.core.components.PersianDatePickerController
+import com.razaghimahdi.compose_persian_date.core.controller.PersianDatePickerController
 import com.razaghimahdi.compose_persian_date.util.Constants.persianMonthNames
 
 

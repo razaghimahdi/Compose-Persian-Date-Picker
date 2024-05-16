@@ -38,7 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
-import com.razaghimahdi.compose_persian_date.core.components.PersianDatePickerController
+import com.razaghimahdi.compose_persian_date.core.controller.PersianDatePickerController
 import kotlinx.coroutines.launch
 
 

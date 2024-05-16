@@ -15,7 +15,7 @@
  */
 
 
-package com.razaghimahdi.compose_persian_date.core.components
+package com.razaghimahdi.compose_persian_date.core.controller
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -67,7 +67,6 @@ class PersianDatePickerController {
 
     /*private var _isLeapYear: MutableState<Boolean> = mutableStateOf(false)
     internal val isLeapYear get() = _isLeapYear.value*/
-
 
 
 
