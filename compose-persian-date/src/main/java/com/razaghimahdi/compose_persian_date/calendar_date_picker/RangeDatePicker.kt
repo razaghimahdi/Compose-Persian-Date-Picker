@@ -200,9 +200,9 @@ private fun CalendarBox(controller: PersianRangeDatePickerController, containerC
         val list = derivedStateOf { (1..firstDayOfMonth).map { -1 } + (1..controller.currentSelectedPersianDate.monthLength) + (1..lastDayOfMonth).map { -1 } }
         items(list.value) { day ->
             if (day == -1) {
-               EmptyDay(containerColor = containerColor, contentColor = contentColor)
+                EmptyDay(containerColor = containerColor, contentColor = contentColor)
             } else {
-                SingleDayBox2(
+                SingleDayBox(
                     title = day.toString(),
                     modifier = Modifier.size(40.dp),
                     controller = controller,
@@ -365,6 +365,192 @@ internal fun SingleDayBox2(title: String, modifier: Modifier, contentColor: Colo
 
 @SuppressLint("ProduceStateDoesNotAssignValue")
 @Composable
+internal fun SingleDayBox3(title: String, modifier: Modifier, contentColor: Color, containerColor: Color, controller: PersianRangeDatePickerController) {
+
+    val currentSelectedPersianDate = controller.currentSelectedPersianDate
+    val minSelectedDate = controller.minSelectedDate
+    val maxSelectedDate = controller.maxSelectedDate
+    val selectedDatesRange = controller.selectedDatesRange
+
+
+    var colorMutable by remember(currentSelectedPersianDate.toString(), title) { mutableStateOf(containerColor) }
+
+    val tmpDate = remember(currentSelectedPersianDate.toString(), title) { mutableStateOf(PersianDate(currentSelectedPersianDate.toDate())) }
+    SideEffect {
+        tmpDate.value.setShDay(title.toInt()).startOfDay()
+    }
+
+
+    val singleSelectedRangDate = selectedDatesRange.find { it.toString() == tmpDate.value.startOfDay()?.toString() }
+    val color = remember(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+        derivedStateOf {
+            if (
+                (
+                        minSelectedDate?.toString() == tmpDate.value.toString() &&
+                                maxSelectedDate == null &&
+                                selectedDatesRange.isEmpty())
+
+                ||
+
+                (singleSelectedRangDate != null)
+            ) {
+                contentColor
+            } else {
+                containerColor
+            }
+        }
+    }
+    /* LaunchedEffect(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+         colorMutable = if (
+             (
+                     minSelectedDate?.toString() == tmpDate.value.toString() &&
+                             maxSelectedDate == null &&
+                             selectedDatesRange.isEmpty())
+
+             ||
+
+             (singleSelectedRangDate != null)
+         ) {
+             contentColor
+         } else {
+             containerColor
+         }
+     }*/
+
+
+    var topStartCornerRadiusMutable by remember(selectedDatesRange.size, minSelectedDate, tmpDate.toString()) {
+        mutableStateOf(50.dp)
+    }
+    val topStartCornerRadius = remember(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+        derivedStateOf {
+            if (
+                (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+                (tmpDate.value.toString() == selectedDatesRange.lastOrNull()?.toString())
+            ) {
+                50.dp
+            } else {
+                0.dp
+            }
+        }
+    }
+    var bottomStartCornerRadiusMutable by remember(selectedDatesRange.size, minSelectedDate, tmpDate.toString()) {
+        mutableStateOf(50.dp)
+    }
+    val bottomStartCornerRadius = remember(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+        derivedStateOf {
+            if (
+                (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+                (tmpDate.value.toString() == selectedDatesRange.lastOrNull()?.toString())
+            ) {
+                50.dp
+            } else {
+                0.dp
+            }
+        }
+    }
+    var topEndCornerRadiusMutable by remember(selectedDatesRange.size, minSelectedDate, tmpDate.toString()) {
+        mutableStateOf(50.dp)
+    }
+    val topEndCornerRadius = remember(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+        derivedStateOf {
+            if (
+                (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+                (tmpDate.value.toString() == selectedDatesRange.firstOrNull()?.toString())
+            ) {
+                50.dp
+            } else {
+                0.dp
+            }
+        }
+    }
+    var bottomEndCornerRadiusMutable by remember(selectedDatesRange.size, minSelectedDate, tmpDate.toString()) {
+        mutableStateOf(50.dp)
+    }
+    val bottomEndCornerRadius = remember(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+        derivedStateOf {
+            if (
+                (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+                (tmpDate.value.toString() == selectedDatesRange.firstOrNull()?.toString())
+            ) {
+                50.dp
+            } else {
+                0.dp
+            }
+        }
+    }
+
+    /*LaunchedEffect(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+        topStartCornerRadiusMutable = if (
+            (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+            (tmpDate.value.toString() == selectedDatesRange.lastOrNull()?.toString())
+        ) {
+            50.dp
+        } else {
+            0.dp
+        }
+    }*/
+
+
+    /*  LaunchedEffect(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+          bottomStartCornerRadiusMutable = if (
+              (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+              (tmpDate.value.toString() == selectedDatesRange.lastOrNull()?.toString())
+          ) {
+              50.dp
+          } else {
+              0.dp
+          }
+      }*/
+
+
+    /* LaunchedEffect(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+         topEndCornerRadiusMutable = if (
+             (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+             (tmpDate.value.toString() == selectedDatesRange.firstOrNull()?.toString())
+         ) {
+             50.dp
+         } else {
+             0.dp
+         }
+     }*/
+
+
+    /*LaunchedEffect(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+        bottomEndCornerRadiusMutable = if (
+            (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+            (tmpDate.value.toString() == selectedDatesRange.firstOrNull()?.toString())
+        ) {
+            50.dp
+        } else {
+            0.dp
+        }
+    }*/
+
+
+    val topStartCorner = animateDpAsState(targetValue = topEndCornerRadius.value, label = "", animationSpec = tween(200))
+    val bottomStartCorner = animateDpAsState(targetValue = bottomEndCornerRadius.value, label = "", animationSpec = tween(200))
+    val topEndCorner = animateDpAsState(targetValue = topStartCornerRadius.value, label = "", animationSpec = tween(200))
+    val bottomEndCorner = animateDpAsState(targetValue = bottomStartCornerRadius.value, label = "", animationSpec = tween(200))
+
+
+
+
+    SingleDayBoxStateless(
+        modifier = modifier,
+        color = color.value,
+        topStartCorner = topStartCorner.value,
+        bottomStartCorner = bottomStartCorner.value,
+        topEndCorner = topEndCorner.value,
+        bottomEndCorner = bottomEndCorner.value,
+        controller = controller,
+        title = title,
+        contentColor = contentColor,
+        containerColor = containerColor,
+    )
+}
+
+@SuppressLint("ProduceStateDoesNotAssignValue")
+@Composable
 internal fun SingleDayBox(title: String, modifier: Modifier, contentColor: Color, containerColor: Color, controller: PersianRangeDatePickerController) {
 
     val currentSelectedPersianDate = controller.currentSelectedPersianDate
@@ -373,7 +559,6 @@ internal fun SingleDayBox(title: String, modifier: Modifier, contentColor: Color
     val selectedDatesRange = controller.selectedDatesRange
 
 
-    var color by remember(currentSelectedPersianDate.toString(), title) { mutableStateOf(containerColor) }
     val tmpDate = remember(currentSelectedPersianDate.toString(), title) { mutableStateOf(PersianDate(currentSelectedPersianDate.toDate())) }
     SideEffect {
         tmpDate.value.setShDay(title.toInt()).startOfDay()
@@ -381,97 +566,104 @@ internal fun SingleDayBox(title: String, modifier: Modifier, contentColor: Color
 
 
     val singleSelectedRangDate = selectedDatesRange.find { it.toString() == tmpDate.value.startOfDay()?.toString() }
+    val color = remember(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+        derivedStateOf {
+            if (
+                (
+                        minSelectedDate?.toString() == tmpDate.value.toString() &&
+                                maxSelectedDate == null &&
+                                selectedDatesRange.isEmpty())
 
-    color = if (
-        (
-                minSelectedDate?.toString() == tmpDate.value.toString() &&
-                        maxSelectedDate == null &&
-                        selectedDatesRange.isEmpty())
+                ||
 
-        ||
-
-        (singleSelectedRangDate != null)
-    ) {
-        contentColor
-    } else {
-        containerColor
+                (singleSelectedRangDate != null)
+            ) {
+                contentColor
+            } else {
+                containerColor
+            }
+        }
     }
 
 
-    var topStartCornerRadius by remember(selectedDatesRange.size, minSelectedDate, tmpDate.toString()) {
-        mutableStateOf(50.dp)
+    val topStartCornerRadius = remember(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+        derivedStateOf {
+            if (
+                (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+                (tmpDate.value.toString() == selectedDatesRange.lastOrNull()?.toString())
+            ) {
+                50.dp
+            } else {
+                0.dp
+            }
+        }
     }
-    var bottomStartCornerRadius by remember(selectedDatesRange.size, minSelectedDate, tmpDate.toString()) {
-        mutableStateOf(50.dp)
+    val bottomStartCornerRadius = remember(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+        derivedStateOf {
+            if (
+                (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+                (tmpDate.value.toString() == selectedDatesRange.lastOrNull()?.toString())
+            ) {
+                50.dp
+            } else {
+                0.dp
+            }
+        }
     }
-    var topEndCornerRadius by remember(selectedDatesRange.size, minSelectedDate, tmpDate.toString()) {
-        mutableStateOf(50.dp)
+    val topEndCornerRadius = remember(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+        derivedStateOf {
+            if (
+                (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+                (tmpDate.value.toString() == selectedDatesRange.firstOrNull()?.toString())
+            ) {
+                50.dp
+            } else {
+                0.dp
+            }
+        }
     }
-    var bottomEndCornerRadius by remember(selectedDatesRange.size, minSelectedDate, tmpDate.toString()) {
-        mutableStateOf(50.dp)
-    }
-
-    topStartCornerRadius = if (
-        (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
-        (tmpDate.value.toString() == selectedDatesRange.lastOrNull()?.toString())
-    ) {
-        50.dp
-    } else {
-        0.dp
-    }
-
-
-    bottomStartCornerRadius = if (
-        (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
-        (tmpDate.value.toString() == selectedDatesRange.lastOrNull()?.toString())
-    ) {
-        50.dp
-    } else {
-        0.dp
-    }
-
-
-    topEndCornerRadius = if (
-        (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
-        (tmpDate.value.toString() == selectedDatesRange.firstOrNull()?.toString())
-    ) {
-        50.dp
-    } else {
-        0.dp
-    }
-
-
-
-    bottomEndCornerRadius = if (
-        (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
-        (tmpDate.value.toString() == selectedDatesRange.firstOrNull()?.toString())
-    ) {
-        50.dp
-    } else {
-        0.dp
+    val bottomEndCornerRadius = remember(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+        derivedStateOf {
+            if (
+                (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+                (tmpDate.value.toString() == selectedDatesRange.firstOrNull()?.toString())
+            ) {
+                50.dp
+            } else {
+                0.dp
+            }
+        }
     }
 
-    /*
-        val topStartCorner = animateDpAsState(targetValue = topEndCornerRadius, label = "", animationSpec = tween(350))
-        val bottomStartCorner = animateDpAsState(targetValue = bottomEndCornerRadius, label = "", animationSpec = tween(350))
-        val topEndCorner = animateDpAsState(targetValue = topStartCornerRadius, label = "", animationSpec = tween(350))
-        val bottomEndCorner = animateDpAsState(targetValue = bottomStartCornerRadius, label = "", animationSpec = tween(350))
-    */
+    val topStartCorner = animateDpAsState(targetValue = topEndCornerRadius.value, label = "", animationSpec = tween(200))
+    val bottomStartCorner = animateDpAsState(targetValue = bottomEndCornerRadius.value, label = "", animationSpec = tween(200))
+    val topEndCorner = animateDpAsState(targetValue = topStartCornerRadius.value, label = "", animationSpec = tween(200))
+    val bottomEndCorner = animateDpAsState(targetValue = bottomStartCornerRadius.value, label = "", animationSpec = tween(200))
 
 
 
-    SingleDayBoxStateless(
-        modifier = modifier,
-        color = color,
-        topStartCorner = bottomEndCornerRadius,
-        bottomStartCorner = bottomEndCornerRadius,
-        topEndCorner = topStartCornerRadius,
-        bottomEndCorner = bottomStartCornerRadius,
-        controller = controller,
-        title = title,
-        contentColor = contentColor,
-        containerColor = containerColor,
-    )
+    Box(contentAlignment = Alignment.Center, modifier = modifier
+        .then(
+            Modifier
+                .background(
+                    color.value,
+                    RoundedCornerShape(topStart = topStartCorner.value, bottomStart = bottomStartCorner.value, topEnd = topEndCorner.value, bottomEnd = bottomEndCorner.value)
+                )
+                .clip(CircleShape)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = rememberRipple(bounded = true),
+                ) {
+                    controller.addToRangeList(title.toInt())
+                }
+        )) {
+        Column(
+            modifier = Modifier
+                .padding(TEXT_CALENDAR_PADDING), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(text = title, style = MaterialTheme.typography.bodySmall, color = if (contentColor == color.value) containerColor else contentColor)
+        }
+    }
 }
 
 @Composable
