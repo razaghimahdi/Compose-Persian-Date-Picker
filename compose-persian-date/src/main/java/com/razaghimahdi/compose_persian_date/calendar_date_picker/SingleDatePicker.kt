@@ -102,38 +102,7 @@ fun SingleDatePicker(
         controller.initialPagee + half - half % controller.dateListCollection.size
     val pagerState = rememberPagerState(pageCount = { max }, initialPage = pagerPositionIndex)
 
-//    val pagerState = rememberPagerState(
-//        pageCount = { controller.dateListCollection.size },
-//        initialPage = controller.initialPagee,
-//        // initialPage = 1
-//    )
-    Log.i(
-        "AppDebug",
-        "SingleDatePicker controller.dateListCollection.size: " + controller.dateListCollection.size
-    )
-    Log.i("AppDebug", "SingleDatePicker controller.initialPagee: " + controller.initialPagee)
-
     val coroutine = rememberCoroutineScope()
-
-    LaunchedEffect(Unit) {
-        //  pagerState.scrollToPage(controller.initialPagee)
-    }
-
-
-    //  val recomposeToggleState = remember { mutableStateOf(false) }
-    // LaunchedEffect(recomposeToggleState.value) {}
-
-
-//    LaunchedEffect(pagerState) {
-//        snapshotFlow { pagerState.settledPage }.collect { page ->
-////            controller.currentSelectedPersianDate.setShYear(controller.dateList[pagerState.currentPage - 1].persianDate.shYear)
-////            controller.currentSelectedPersianDate.setShMonth(controller.dateList[pagerState.currentPage - 1].persianDate.shMonth)
-////            controller.currentSelectedPersianDate.setShDay(controller.dateList[pagerState.currentPage - 1].persianDate.shDay)
-////            controller.configurePageList()
-//            controller.updateCurrentDate(page)
-//        }
-//    }
-
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
 
@@ -152,15 +121,13 @@ fun SingleDatePicker(
 
                 MonthTitleBox(
                     prevOnExecute = {
-                        //  recomposeToggleState.value = !recomposeToggleState.value
-                        coroutine.launch {
+                         coroutine.launch {
                             pagerState.animateScrollToPage(pagerState.currentPage - 1)
 
                         }
                     },
                     nextOnExecute = {
-                        //  recomposeToggleState.value = !recomposeToggleState.value
-                        coroutine.launch {
+                         coroutine.launch {
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
                         }
                     },
@@ -190,11 +157,6 @@ fun SingleDatePicker(
                         contentColor = contentColor
                     )
                 }
-
-//                    HorizontalPager(
-//                        state = pagerState,
-//                    ) {
-//                    }
             }
         }
     }
@@ -207,12 +169,6 @@ private fun CalendarBox(
     containerColor: Color,
     contentColor: Color
 ) {
-    val firstDayOfMonth = controller.getFirstNameDayOfWeek()
-    val lastDayOfMonth = controller.getLastNameDayOfWeek()
-
-    //val list = (1..firstDayOfMonth).map { -1 } + (1..controller.currentSelectedPersianDate.monthLength) + (1..lastDayOfMonth).map { -1 }
-
-    //val list = remember { derivedStateOf { controller.showDateList } }
     val list =  controller.showDateList
 
     LazyVerticalGrid(
@@ -225,13 +181,6 @@ private fun CalendarBox(
             if (date.value == -1) {
                 EmptyDay(containerColor = containerColor, contentColor = contentColor)
             } else {
-                /*  SingleDayBox(
-                      title = day.toString(),
-                      modifier = Modifier.size(40.dp),
-                      controller = controller,
-                      containerColor = containerColor,
-                      contentColor = contentColor,
-                  )*/
                 DateBox(
                     dateP = date,
                     modifier = Modifier.size(40.dp),
@@ -260,73 +209,6 @@ private fun DatePickerPreview() {
     SingleDatePicker(rememberPersianSingleDatePickerController())
 }
 
-@SuppressLint("ProduceStateDoesNotAssignValue")
-@Composable
-private fun SingleDayBox(
-    title: String,
-    modifier: Modifier,
-    contentColor: Color,
-    containerColor: Color,
-    controller: PersianSingleDatePickerController
-) {
-
-    val currentSelectedPersianDate =
-        remember { derivedStateOf { controller.currentSelectedPersianDate } }
-
-    val tmpDate = remember(currentSelectedPersianDate.value.toString(), title) {
-        val date = PersianDate(currentSelectedPersianDate.value.toDate())
-        date.setShDay(title.toInt()).startOfDay()
-        mutableStateOf(date)
-    }
-
-    // val isSelected = remember { derivedStateOf { tmpDate.value.startOfDay().time == controller.selectedDate?.startOfDay()?.time } }
-    val isSelected = remember { derivedStateOf { false } }
-
-
-    /* val color = remember(currentSelectedPersianDate.value.toString(), title) { Animatable(containerColor) }
-     LaunchedEffect(isSelected) {
-         if (isSelected) {
-             color.animateTo(contentColor, animationSpec = tween(350))
-         } else {
-             color.animateTo(containerColor, animationSpec = tween(350))
-         }
-     }*/
-
-    val color by animateColorAsState(
-        if (isSelected.value) {
-            contentColor
-        } else {
-            containerColor
-        }, label = "", animationSpec = tween(350)
-    )
-
-
-
-    Box(contentAlignment = Alignment.Center, modifier = modifier
-        .background(color, RoundedCornerShape(50.dp))
-        .clip(CircleShape)
-        .clickable(
-            interactionSource = remember { MutableInteractionSource() },
-            indication = rememberRipple(bounded = true),
-        ) {
-            controller.updateSelectedDate(day = title.toInt())
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(TEXT_CALENDAR_PADDING),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodySmall,
-                color = if (contentColor == color) containerColor else contentColor
-            )
-        }
-    }
-}
-
 
 @SuppressLint("ProduceStateDoesNotAssignValue")
 @Composable
@@ -338,30 +220,8 @@ private fun DateBox(
     controller: PersianSingleDatePickerController
 ) {
 
-    //  val currentSelectedPersianDate = remember { derivedStateOf { controller.currentSelectedPersianDate } }
-
-    /* val tmpDate = remember(currentSelectedPersianDate.value.toString(), title) {
-         val date = PersianDate(currentSelectedPersianDate.value.toDate())
-         date.setShDay(title.toInt()).startOfDay()
-         mutableStateOf(date)
-     }*/
-
     val date by rememberUpdatedState(dateP)
     val isSelected by rememberUpdatedState(date.persianDate.startOfDay().time == controller.selectedDate?.persianDate?.startOfDay()?.time)
-
-    // val isSelected =  date.persianDate.startOfDay().time == controller.selectedDate?.persianDate?.startOfDay()?.time
-
-    // Log.i("AppDebug", "DateBox isSelected: " + isSelected)
-
-
-    /* val color = remember(currentSelectedPersianDate.value.toString(), title) { Animatable(containerColor) }
-     LaunchedEffect(isSelected) {
-         if (isSelected) {
-             color.animateTo(contentColor, animationSpec = tween(350))
-         } else {
-             color.animateTo(containerColor, animationSpec = tween(350))
-         }
-     }*/
 
     val color by animateColorAsState(
         if (isSelected) {
@@ -379,8 +239,7 @@ private fun DateBox(
             interactionSource = remember { MutableInteractionSource() },
             indication = rememberRipple(bounded = true),
         ) {
-            // controller.updateSelectedDate(day = date.value)
-            controller.updateSelectedDate(date = date)
+             controller.updateSelectedDate(date = date)
         }
     ) {
         Column(
@@ -398,54 +257,6 @@ private fun DateBox(
     }
 }
 
-@Composable
-private fun SingleDayBoxStateless(
-    modifier: Modifier,
-    color: Color,
-    contentColor: Color,
-    containerColor: Color,
-    topStartCorner: Dp,
-    bottomStartCorner: Dp,
-    topEndCorner: Dp,
-    bottomEndCorner: Dp,
-    controller: PersianSingleDatePickerController,
-    title: String,
-) {
-
-    Box(contentAlignment = Alignment.Center, modifier = modifier
-        .then(
-            Modifier
-                .background(
-                    color,
-                    RoundedCornerShape(
-                        topStart = topStartCorner,
-                        bottomStart = bottomStartCorner,
-                        topEnd = topEndCorner,
-                        bottomEnd = bottomEndCorner
-                    )
-                )
-                .clip(CircleShape)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(bounded = true),
-                ) {
-                    //    controller.addToRangeList(title.toInt())
-                }
-        )) {
-        Column(
-            modifier = Modifier
-                .padding(TEXT_CALENDAR_PADDING),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodySmall,
-                color = if (contentColor == color) containerColor else contentColor
-            )
-        }
-    }
-}
 
 @Composable
 private fun WeekTitleBox(textStyle: TextStyle, containerColor: Color, contentColor: Color) {
@@ -514,10 +325,6 @@ private fun MonthTitleBox(
     controller: PersianSingleDatePickerController,
     containerColor: Color
 ) {
-    Log.i(
-        "AppDebug",
-        "MonthTitleBox controller.currentSelectedPersianDate: " + controller.currentSelectedPersianDate
-    )
     Box(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -562,8 +369,7 @@ private fun MonthTitleBox(
             }
 
             IconButton(onClick = {
-                //  controller.prevMonth()
-                prevOnExecute()
+                 prevOnExecute()
             }) {
                 Icon(
                     Icons.AutoMirrored.Filled.KeyboardArrowRight,
