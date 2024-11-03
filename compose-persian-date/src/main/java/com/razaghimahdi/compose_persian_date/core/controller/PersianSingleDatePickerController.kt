@@ -177,11 +177,6 @@ class PersianSingleDatePickerController {
         _currentSelectedPersianDate.value = date
     }
 
-    internal fun updateSelectedDate(day: Int) {
-        //   val tmpDate = PersianDate(currentSelectedPersianDate.toDate())
-        //   tmpDate.setShDay(day)?.startOfDay()
-        //   _selectedDate.value = tmpDate
-    }
 
     internal fun updateSelectedDate(date: PDate) {
         _selectedDate.value = date
@@ -346,10 +341,6 @@ class PersianSingleDatePickerController {
         }
 
         configureDateCollectionList()
-        //  configureDateCalendar()
-
-
-        // configurePageList()
 
         val firstDate =
             dateListCollection.find {
@@ -429,61 +420,6 @@ class PersianSingleDatePickerController {
 
         _currentSelectedPersianDate.value =
             currentDate ?: throw IllegalArgumentException("current date not found!")
-
-    }
-
-    internal fun configurePageList() {
-        val date = currentSelectedPersianDate.toDate()
-
-
-        val calendar = Calendar.getInstance()
-        calendar.time = date
-
-        val dates = mutableListOf<Date>()
-
-        // Add the past three months
-        for (i in 1..2) {
-            calendar.add(Calendar.MONTH, -1)
-            dates.add(calendar.time)
-        }
-
-
-        // Add the current month
-        dates.add(date)
-
-        // Reset to original date
-        calendar.time = date
-
-        // Add the next three months
-        for (i in 1..2) {
-            calendar.add(Calendar.MONTH, 1)
-            dates.add(calendar.time)
-        }
-
-
-        _dateList.value = dates.map {
-            PDate(
-                value = dates.indexOf(it),
-                persianDate = PersianDate(it),
-                isSelected = false
-            )
-        }
-
-
-        val list =
-            (1..getFirstNameDayOfWeek()).map { -1 } + (1..currentSelectedPersianDate.monthLength) + (1..getLastNameDayOfWeek()).map { -1 }
-        val newList = arrayListOf<PDate>()
-        list.forEach {
-            val date = PersianDate(currentSelectedPersianDate.toDate())
-            if (it > 0) date.setShDay(it).startOfDay()
-            newList.add(PDate(value = it, persianDate = date, isSelected = false))
-        }
-        _showDateList.value = newList
-
-
-        Log.i("AppDebug", "configurePageList dateList: " + dateList.size)
-        Log.i("AppDebug", "configurePageList showDateList: " + showDateList.size)
-
 
     }
 
