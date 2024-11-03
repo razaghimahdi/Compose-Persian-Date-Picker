@@ -19,7 +19,6 @@ package com.razaghimahdi.compose_persian_date.calendar_date_picker
 
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.compose.animation.Animatable
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
@@ -39,7 +38,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -55,11 +53,8 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.ReusableContent
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -75,6 +70,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.razaghimahdi.compose_persian_date.core.components.InfiniteHorizontalPager
 import com.razaghimahdi.compose_persian_date.core.controller.PersianSingleDatePickerController
 import com.razaghimahdi.compose_persian_date.core.controller.rememberPersianSingleDatePickerController
 import com.razaghimahdi.compose_persian_date.core.model.PDate
@@ -97,26 +93,46 @@ fun SingleDatePicker(
         controller.initDate()
     }
 
+    val max = Short.MAX_VALUE.toInt()
+    val half = max / 2
 
-    val pagerState = rememberPagerState(
-        pageCount = { controller.dateList.size },
-        initialPage = controller.initialPagee
-        // initialPage = 1
+    if (controller.dateListCollection.isEmpty()) return
+
+    val pagerPositionIndex =
+        controller.initialPagee + half - half % controller.dateListCollection.size
+    val pagerState = rememberPagerState(pageCount = { max }, initialPage = pagerPositionIndex)
+
+//    val pagerState = rememberPagerState(
+//        pageCount = { controller.dateListCollection.size },
+//        initialPage = controller.initialPagee,
+//        // initialPage = 1
+//    )
+    Log.i(
+        "AppDebug",
+        "SingleDatePicker controller.dateListCollection.size: " + controller.dateListCollection.size
     )
+    Log.i("AppDebug", "SingleDatePicker controller.initialPagee: " + controller.initialPagee)
 
     val coroutine = rememberCoroutineScope()
 
+    LaunchedEffect(Unit) {
+        //  pagerState.scrollToPage(controller.initialPagee)
+    }
 
-  //  val recomposeToggleState = remember { mutableStateOf(false) }
-   // LaunchedEffect(recomposeToggleState.value) {}
+
+    //  val recomposeToggleState = remember { mutableStateOf(false) }
+    // LaunchedEffect(recomposeToggleState.value) {}
 
 
-    LaunchedEffect(key1 = pagerState.currentPage) {
-        controller.currentSelectedPersianDate.setShYear(controller.dateList[pagerState.currentPage - 1].persianDate.shYear)
-        controller.currentSelectedPersianDate.setShMonth(controller.dateList[pagerState.currentPage - 1].persianDate.shMonth)
-        controller.currentSelectedPersianDate.setShDay(controller.dateList[pagerState.currentPage - 1].persianDate.shDay)
-        controller.configurePageList()
-     }
+//    LaunchedEffect(pagerState) {
+//        snapshotFlow { pagerState.settledPage }.collect { page ->
+////            controller.currentSelectedPersianDate.setShYear(controller.dateList[pagerState.currentPage - 1].persianDate.shYear)
+////            controller.currentSelectedPersianDate.setShMonth(controller.dateList[pagerState.currentPage - 1].persianDate.shMonth)
+////            controller.currentSelectedPersianDate.setShDay(controller.dateList[pagerState.currentPage - 1].persianDate.shDay)
+////            controller.configurePageList()
+//            controller.updateCurrentDate(page)
+//        }
+//    }
 
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
@@ -136,13 +152,14 @@ fun SingleDatePicker(
 
                 MonthTitleBox(
                     prevOnExecute = {
-                      //  recomposeToggleState.value = !recomposeToggleState.value
+                        //  recomposeToggleState.value = !recomposeToggleState.value
                         coroutine.launch {
                             pagerState.animateScrollToPage(pagerState.currentPage - 1)
+
                         }
                     },
                     nextOnExecute = {
-                      //  recomposeToggleState.value = !recomposeToggleState.value
+                        //  recomposeToggleState.value = !recomposeToggleState.value
                         coroutine.launch {
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
                         }
@@ -157,9 +174,14 @@ fun SingleDatePicker(
                     containerColor = containerColor,
                     contentColor = contentColor
                 )
-
-                HorizontalPager(
-                    state = pagerState,
+                InfiniteHorizontalPager(
+                    modifier = Modifier.fillMaxSize(),
+                    pagerState = pagerState,
+                    pagerPositionIndex = pagerPositionIndex,
+                    pageCount = controller.dateListCollection.size,
+                    onPageChanged = { page ->
+                        controller.updateCurrentDate(page)
+                    }
                 ) {
 
                     CalendarBox(
@@ -168,6 +190,11 @@ fun SingleDatePicker(
                         contentColor = contentColor
                     )
                 }
+
+//                    HorizontalPager(
+//                        state = pagerState,
+//                    ) {
+//                    }
             }
         }
     }
@@ -185,12 +212,16 @@ private fun CalendarBox(
 
     //val list = (1..firstDayOfMonth).map { -1 } + (1..controller.currentSelectedPersianDate.monthLength) + (1..lastDayOfMonth).map { -1 }
 
+    //val list = remember { derivedStateOf { controller.showDateList } }
+    val list =  controller.showDateList
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(7),
         modifier = Modifier.fillMaxSize()
     ) {
-        items(items = controller.showDateList,
-                key = {it.hashCode()}) { date ->
+
+        items(items = list) { date ->
+
             if (date.value == -1) {
                 EmptyDay(containerColor = containerColor, contentColor = contentColor)
             } else {
@@ -332,40 +363,40 @@ private fun DateBox(
          }
      }*/
 
-        val color by animateColorAsState(
-            if (isSelected) {
-                contentColor
-            } else {
-                containerColor
-            }, label = "", animationSpec = tween(350)
-        )
+    val color by animateColorAsState(
+        if (isSelected) {
+            contentColor
+        } else {
+            containerColor
+        }, label = "", animationSpec = tween(350)
+    )
 
 
-        Box(contentAlignment = Alignment.Center, modifier = modifier
-            .background(color, RoundedCornerShape(50.dp))
-            .clip(CircleShape)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(bounded = true),
-            ) {
-                // controller.updateSelectedDate(day = date.value)
-                controller.updateSelectedDate(date = date)
-            }
+    Box(contentAlignment = Alignment.Center, modifier = modifier
+        .background(color, RoundedCornerShape(50.dp))
+        .clip(CircleShape)
+        .clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = rememberRipple(bounded = true),
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(TEXT_CALENDAR_PADDING),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = date.value.toString(),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (contentColor == color) containerColor else contentColor
-                )
-            }
+            // controller.updateSelectedDate(day = date.value)
+            controller.updateSelectedDate(date = date)
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(TEXT_CALENDAR_PADDING),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = date.value.toString(),
+                style = MaterialTheme.typography.bodySmall,
+                color = if (contentColor == color) containerColor else contentColor
+            )
         }
     }
+}
 
 @Composable
 private fun SingleDayBoxStateless(
@@ -483,6 +514,10 @@ private fun MonthTitleBox(
     controller: PersianSingleDatePickerController,
     containerColor: Color
 ) {
+    Log.i(
+        "AppDebug",
+        "MonthTitleBox controller.currentSelectedPersianDate: " + controller.currentSelectedPersianDate
+    )
     Box(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
