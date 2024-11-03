@@ -44,7 +44,7 @@ class PersianSingleDatePickerController {
     private var _showDateList: MutableState<List<PDate>> = mutableStateOf(listOf())
     internal val showDateList get() = _showDateList.value
 
-    private var _dateListCollection: MutableState<List<List<PDate>>> = mutableStateOf(listOf())
+    private var _dateListCollection: MutableState<List<PersianDate>> = mutableStateOf(listOf())
     internal val dateListCollection get() = _dateListCollection.value
 
     private var _dateList: MutableState<List<PDate>> = mutableStateOf(listOf())
@@ -85,7 +85,8 @@ class PersianSingleDatePickerController {
     internal val isLeapYear get() = _isLeapYear.value*/
 
 
-    private var _currentSelectedPersianDate: MutableState<PersianDate> = mutableStateOf(PersianDate().startOfDay())
+    private var _currentSelectedPersianDate: MutableState<PersianDate> =
+        mutableStateOf(PersianDate().startOfDay())
     internal val currentSelectedPersianDate get() = _currentSelectedPersianDate.value
 
 
@@ -200,10 +201,20 @@ class PersianSingleDatePickerController {
             7 -> String.format(locale, "September - October %d", currentSelectedPersianDate.grgYear)
             8 -> String.format(locale, "October - November %d", currentSelectedPersianDate.grgYear)
             9 -> String.format(locale, "November - December %d", currentSelectedPersianDate.grgYear)
-            10 -> String.format("December %s - January %s ", currentSelectedPersianDate.grgYear, currentSelectedPersianDate.grgYear + 1)
+            10 -> String.format(
+                "December %s - January %s ",
+                currentSelectedPersianDate.grgYear,
+                currentSelectedPersianDate.grgYear + 1
+            )
+
             11 -> String.format(locale, "January - February %d", currentSelectedPersianDate.grgYear)
             12 -> String.format(locale, "February - March %d", currentSelectedPersianDate.grgYear)
-            else -> String.format(locale, "%s %d", currentSelectedPersianDate.shMonth, currentSelectedPersianDate.shYear)
+            else -> String.format(
+                locale,
+                "%s %d",
+                currentSelectedPersianDate.shMonth,
+                currentSelectedPersianDate.shYear
+            )
         }
     }
 
@@ -334,7 +345,32 @@ class PersianSingleDatePickerController {
             }
         }
 
-        val list = (1..getFirstNameDayOfWeek()).map { -1 } + (1..currentSelectedPersianDate.monthLength) + (1..getLastNameDayOfWeek()).map { -1 }
+        configureDateCollectionList()
+        //  configureDateCalendar()
+
+
+        // configurePageList()
+
+        val firstDate =
+            dateListCollection.find {
+                it.shYear == PersianDate().shYear && it.shMonth == PersianDate().shMonth
+            }
+        _initialPagee.value = dateListCollection.indexOf(firstDate)
+
+        configureDateCalendar()
+    }
+
+    internal fun updateCurrentDate(page: Int) {
+        val date = dateListCollection[page]
+        _currentSelectedPersianDate.value = date
+        configureDateCalendar()
+
+    }
+
+    private fun configureDateCalendar() {
+
+        val list =
+            (1..getFirstNameDayOfWeek()).map { -1 } + (1..currentSelectedPersianDate.monthLength) + (1..getLastNameDayOfWeek()).map { -1 }
         val newList = arrayListOf<PDate>()
         list.forEach {
             val date = PersianDate(currentSelectedPersianDate.toDate())
@@ -344,21 +380,60 @@ class PersianSingleDatePickerController {
         _showDateList.value = newList
 
 
-        configurePageList()
+    }
 
-        val firstDate =
-            dateList.find {
-                it.persianDate.shYear == PersianDate().shYear && it.persianDate.shMonth == PersianDate().shMonth
-            }
-        _initialPagee.value = dateList.indexOf(firstDate) + 1
+    private fun configureDateCollectionList() {
+
+        val minDate = PersianDate()
+        minDate.setShYear(minYear)
+        minDate.setShMonth(1)
+        minDate.setShDay(1)
+        minDate.startOfDay()
+        val maxDate = PersianDate()
+        maxDate.setShYear(maxYear)
+        maxDate.setShMonth(12)
+        maxDate.setShDay(1)
+        maxDate.startOfDay()
+
+        val datesByYearAndMonth = mutableListOf<Pair<Int, Int>>()
+
+        val calendar = Calendar.getInstance()
+        calendar.time = minDate.toDate()!!
+
+
+        while (calendar.time.before(maxDate.toDate()!!) || calendar.time == maxDate.toDate()!!) {
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH) + 1 // Months are 0-based in Calendar, so add 1
+            datesByYearAndMonth.add(year to month)
+
+            // Move to the next month
+            calendar.add(Calendar.MONTH, 1)
+        }
+
+        val list = mutableListOf<PersianDate>()
+        datesByYearAndMonth.forEach { date ->
+
+            val cal = Calendar.getInstance()
+            cal.set(date.first, date.second, 1)
+
+            val pDate = PersianDate(cal.time)
+            list.add(pDate)
+        }
+
+
+        _dateListCollection.value = list
+
+
+        val currentDate =
+            dateListCollection.find { it.shYear == PersianDate().shYear && it.shMonth == PersianDate().shMonth }
+
+        _currentSelectedPersianDate.value =
+            currentDate ?: throw IllegalArgumentException("current date not found!")
 
     }
 
-    internal fun configurePageList(){
-        val date =  currentSelectedPersianDate.toDate()
-
-
-        Log.i("AppDebug", "configurePageList currentSelectedPersianDate: "+currentSelectedPersianDate)
+    internal fun configurePageList() {
+        val date = currentSelectedPersianDate.toDate()
 
 
         val calendar = Calendar.getInstance()
@@ -386,11 +461,17 @@ class PersianSingleDatePickerController {
         }
 
 
-        _dateList.value = dates.map { PDate(value = dates.indexOf(it), persianDate = PersianDate(it), isSelected = false) }
+        _dateList.value = dates.map {
+            PDate(
+                value = dates.indexOf(it),
+                persianDate = PersianDate(it),
+                isSelected = false
+            )
+        }
 
 
-
-        val list = (1..getFirstNameDayOfWeek()).map { -1 } + (1..currentSelectedPersianDate.monthLength) + (1..getLastNameDayOfWeek()).map { -1 }
+        val list =
+            (1..getFirstNameDayOfWeek()).map { -1 } + (1..currentSelectedPersianDate.monthLength) + (1..getLastNameDayOfWeek()).map { -1 }
         val newList = arrayListOf<PDate>()
         list.forEach {
             val date = PersianDate(currentSelectedPersianDate.toDate())
@@ -400,8 +481,8 @@ class PersianSingleDatePickerController {
         _showDateList.value = newList
 
 
-        Log.i("AppDebug", "configurePageList dateList: "+dateList.size)
-        Log.i("AppDebug", "configurePageList showDateList: "+showDateList.size)
+        Log.i("AppDebug", "configurePageList dateList: " + dateList.size)
+        Log.i("AppDebug", "configurePageList showDateList: " + showDateList.size)
 
 
     }
