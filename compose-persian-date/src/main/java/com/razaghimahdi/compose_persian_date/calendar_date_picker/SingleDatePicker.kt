@@ -70,7 +70,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.razaghimahdi.compose_persian_date.core.components.EmptyDay
 import com.razaghimahdi.compose_persian_date.core.components.InfiniteHorizontalPager
+import com.razaghimahdi.compose_persian_date.core.components.WeekTitleBox
 import com.razaghimahdi.compose_persian_date.core.controller.PersianSingleDatePickerController
 import com.razaghimahdi.compose_persian_date.core.controller.rememberPersianSingleDatePickerController
 import com.razaghimahdi.compose_persian_date.core.model.PDate
@@ -177,7 +179,6 @@ private fun CalendarBox(
     ) {
 
         items(items = list) { date ->
-
             if (date.value == -1) {
                 EmptyDay(containerColor = containerColor, contentColor = contentColor)
             } else {
@@ -193,15 +194,6 @@ private fun CalendarBox(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun EmptyDay(containerColor: Color, contentColor: Color) {
-    Box(
-        modifier = Modifier
-            .size(40.dp)
-            .background(Color.Unspecified)
-    )
-}
 
 @Preview
 @Composable
@@ -257,65 +249,6 @@ private fun DateBox(
     }
 }
 
-
-@Composable
-private fun WeekTitleBox(textStyle: TextStyle, containerColor: Color, contentColor: Color) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = "ش", style = textStyle, textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(TEXT_CALENDAR_PADDING)
-                .weight(1f),
-            color = contentColor,
-        )
-        Text(
-            text = "ی", textAlign = TextAlign.Center, style = textStyle,
-            modifier = Modifier
-                .padding(TEXT_CALENDAR_PADDING)
-                .weight(1f),
-            color = contentColor,
-        )
-        Text(
-            text = "د", textAlign = TextAlign.Center, style = textStyle,
-            modifier = Modifier
-                .padding(TEXT_CALENDAR_PADDING)
-                .weight(1f),
-            color = contentColor,
-        )
-        Text(
-            text = "س", textAlign = TextAlign.Center, style = textStyle,
-            modifier = Modifier
-                .padding(TEXT_CALENDAR_PADDING)
-                .weight(1f),
-            color = contentColor,
-        )
-        Text(
-            text = "چ", textAlign = TextAlign.Center, style = textStyle,
-            modifier = Modifier
-                .padding(TEXT_CALENDAR_PADDING)
-                .weight(1f),
-            color = contentColor,
-        )
-        Text(
-            text = "پ", textAlign = TextAlign.Center, style = textStyle,
-            modifier = Modifier
-                .padding(TEXT_CALENDAR_PADDING)
-                .weight(1f),
-            color = contentColor,
-        )
-        Text(
-            text = "ج", textAlign = TextAlign.Center, style = textStyle,
-            modifier = Modifier
-                .padding(TEXT_CALENDAR_PADDING)
-                .weight(1f),
-            color = contentColor,
-        )
-    }
-}
 
 @Composable
 private fun MonthTitleBox(
