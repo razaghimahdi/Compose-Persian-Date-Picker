@@ -213,25 +213,6 @@ class PersianSingleDatePickerController {
         }
     }
 
-    internal fun nextMonth() {
-        if (currentSelectedPersianDate.shMonth == 12) {
-            currentSelectedPersianDate.setShYear(currentSelectedPersianDate.shYear + 1)
-            currentSelectedPersianDate.setShMonth(1)
-        } else {
-            currentSelectedPersianDate.setShMonth(currentSelectedPersianDate.shMonth + 1)
-        }
-        currentSelectedPersianDate.setShDay(1)
-    }
-
-    internal fun prevMonth() {
-        if (currentSelectedPersianDate.shMonth == 1) {
-            currentSelectedPersianDate.setShYear(currentSelectedPersianDate.shYear - 1)
-            currentSelectedPersianDate.setShMonth(12)
-        } else {
-            currentSelectedPersianDate.setShMonth(currentSelectedPersianDate.shMonth - 1)
-        }
-        currentSelectedPersianDate.setShDay(1)
-    }
 
 
     fun getPersianYear(): Int = date.shYear
