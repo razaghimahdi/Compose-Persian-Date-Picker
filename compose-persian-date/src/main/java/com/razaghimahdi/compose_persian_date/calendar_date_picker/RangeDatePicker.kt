@@ -20,6 +20,7 @@ package com.razaghimahdi.compose_persian_date.calendar_date_picker
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.Animatable
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -62,6 +63,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -74,8 +76,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.razaghimahdi.compose_persian_date.core.components.EmptyDay
+import com.razaghimahdi.compose_persian_date.core.components.InfiniteHorizontalPager
+import com.razaghimahdi.compose_persian_date.core.components.WeekTitleBox
 import com.razaghimahdi.compose_persian_date.core.controller.PersianRangeDatePickerController
+import com.razaghimahdi.compose_persian_date.core.controller.PersianSingleDatePickerController
 import com.razaghimahdi.compose_persian_date.core.controller.rememberPersianRangeDatePickerController
+import com.razaghimahdi.compose_persian_date.core.model.PDate
 import com.razaghimahdi.compose_persian_date.util.Constants.TEXT_CALENDAR_PADDING
 import kotlinx.coroutines.launch
 import saman.zamani.persiandate.PersianDate
@@ -91,27 +98,22 @@ fun RangeDatePicker(
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
 ) {
 
-    if (controller.dates.isEmpty()) return
 
+    LaunchedEffect(Unit) {
+        controller.initDate()
+    }
 
-    val pagerState = rememberPagerState(
-        pageCount = { controller.dates.size },
-        initialPage = controller.initialPagee
-        // initialPage = 1
-    )
+    val max = Short.MAX_VALUE.toInt()
+    val half = max / 2
+
+    if (controller.dateListCollection.isEmpty()) return
+
+    val pagerPositionIndex =
+        controller.initialPagee + half - half % controller.dateListCollection.size
+    val pagerState = rememberPagerState(pageCount = { max }, initialPage = pagerPositionIndex)
+
 
     val coroutine = rememberCoroutineScope()
-
-
-    val recomposeToggleState = remember { mutableStateOf(false) }
-    LaunchedEffect(recomposeToggleState.value) {}
-
-
-    LaunchedEffect(key1 = pagerState.currentPage) {
-        controller.currentSelectedPersianDate.setShYear(controller.dates[pagerState.currentPage - 1].shYear)
-        controller.currentSelectedPersianDate.setShMonth(controller.dates[pagerState.currentPage - 1].shMonth)
-        controller.currentSelectedPersianDate.setShDay(controller.dates[pagerState.currentPage - 1].shDay)
-    }
 
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
@@ -129,25 +131,44 @@ fun RangeDatePicker(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
 
-                MonthTitleBox(prevOnExecute = {
-                    recomposeToggleState.value = !recomposeToggleState.value
-                    coroutine.launch {
-                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
+
+                MonthTitleBox(
+                    prevOnExecute = {
+                        coroutine.launch {
+                            pagerState.animateScrollToPage(pagerState.currentPage - 1)
+
+                        }
+                    },
+                    nextOnExecute = {
+                        coroutine.launch {
+                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                        }
+                    },
+                    controller = controller,
+                    contentColor = contentColor,
+                    containerColor = containerColor
+                )
+
+                WeekTitleBox(
+                    textStyle,
+                    containerColor = containerColor,
+                    contentColor = contentColor
+                )
+
+                InfiniteHorizontalPager(
+                    modifier = Modifier.fillMaxSize(),
+                    pagerState = pagerState,
+                    pagerPositionIndex = pagerPositionIndex,
+                    pageCount = controller.dateListCollection.size,
+                    onPageChanged = { page ->
+                        controller.updateCurrentDate(page)
                     }
-                }, nextOnExecute = {
-                    recomposeToggleState.value = !recomposeToggleState.value
-                    coroutine.launch {
-                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                    }
-                }, controller = controller, contentColor = contentColor, containerColor = containerColor)
-
-                WeekTitleBox(textStyle, containerColor = containerColor, contentColor = contentColor)
-
-
-                HorizontalPager(
-                    state = pagerState,
                 ) {
-                    CalendarBox(controller = controller, containerColor = containerColor, contentColor = contentColor)
+                    CalendarBox(
+                        controller = controller,
+                        containerColor = containerColor,
+                        contentColor = contentColor
+                    )
                 }
             }
         }
@@ -156,54 +177,23 @@ fun RangeDatePicker(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun CalendarBox(controller: PersianRangeDatePickerController, containerColor: Color, contentColor: Color) {
-    val firstDayOfMonth = controller.getFirstNameDayOfWeek()
-    val lastDayOfMonth = controller.getLastNameDayOfWeek()
-    /* val firstDayOfMonth = remember {
-         derivedStateOf { controller.getFirstNameDayOfWeek() }
-     }
-     val lastDayOfMonth = remember {
-         derivedStateOf { controller.getFirstNameDayOfWeek() }
-     }*/
-
-    /* FlowRow(modifier = Modifier.fillMaxWidth(), maxItemsInEachRow = 7) {
-
-         for (i in 1..firstDayOfMonth) {
-             EmptyDay(containerColor = containerColor, contentColor = contentColor)
-         }
-
-         for (i in 1..controller.currentSelectedPersianDate.monthLength) {
-             SingleDayBox(
-                 title = (i).toString(),
-                 modifier = Modifier
-                     .fillMaxWidth()
-                     .weight(1f),
-                 controller = controller,
-                 containerColor = containerColor,
-                 contentColor = contentColor,
-             )
-
-         }
-
-         for (i in 1..lastDayOfMonth) {
-             EmptyDay(containerColor = containerColor, contentColor = contentColor)
-         }
-
-
-     }*/
-
+private fun CalendarBox(
+    controller: PersianRangeDatePickerController,
+    containerColor: Color,
+    contentColor: Color
+) {
+    val list = controller.showDateList
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(7),
         modifier = Modifier.fillMaxSize()
     ) {
-        val list = derivedStateOf { (1..firstDayOfMonth).map { -1 } + (1..controller.currentSelectedPersianDate.monthLength) + (1..lastDayOfMonth).map { -1 } }
-        items(list.value) { day ->
-            if (day == -1) {
-               EmptyDay(containerColor = containerColor, contentColor = contentColor)
+        items(list) { date ->
+            if (date.value == -1) {
+                EmptyDay(containerColor = containerColor, contentColor = contentColor)
             } else {
-                SingleDayBox2(
-                    title = day.toString(),
+                DateBox(
+                    dateP = date,
                     modifier = Modifier.size(40.dp),
                     controller = controller,
                     containerColor = containerColor,
@@ -214,26 +204,6 @@ private fun CalendarBox(controller: PersianRangeDatePickerController, containerC
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-internal fun FlowRowScope.EmptyDay(containerColor: Color, contentColor: Color) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f)
-            .background(Color.Unspecified)
-    )
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-internal fun EmptyDay(containerColor: Color, contentColor: Color) {
-    Box(
-        modifier = Modifier
-            .size(40.dp)
-            .background(Color.Unspecified)
-    )
-}
 
 @Preview
 @Composable
@@ -241,9 +211,152 @@ private fun RangeDatePickerPreview() {
     RangeDatePicker(rememberPersianRangeDatePickerController())
 }
 
+
 @SuppressLint("ProduceStateDoesNotAssignValue")
 @Composable
-internal fun SingleDayBox2(title: String, modifier: Modifier, contentColor: Color, containerColor: Color, controller: PersianRangeDatePickerController) {
+private fun DateBox(
+    dateP: PDate,
+    modifier: Modifier,
+    contentColor: Color,
+    containerColor: Color,
+    controller: PersianRangeDatePickerController
+) {
+
+    val date by rememberUpdatedState(dateP)
+
+    val minSelectedDate = controller.minSelectedDate
+    val maxSelectedDate = controller.maxSelectedDate
+    val selectedDatesRange = controller.selectedDatesRange
+
+
+    val color =
+        remember(selectedDatesRange, dateP) { Animatable(containerColor) }
+
+    LaunchedEffect(
+        minSelectedDate,
+        selectedDatesRange.size,
+        selectedDatesRange
+    ) {
+
+        val singleSelectedRangDate =
+            selectedDatesRange.find { it.persianDate.startOfDay().time == date.persianDate.startOfDay().time }
+
+        if (
+            (
+                    minSelectedDate?.persianDate?.startOfDay()?.time == date.persianDate.startOfDay().time &&
+                            maxSelectedDate == null &&
+                            selectedDatesRange.isEmpty())
+
+            ||
+
+            (singleSelectedRangDate != null)
+        ) {
+            color.animateTo(contentColor, animationSpec = tween(350))
+        } else {
+            color.animateTo(containerColor, animationSpec = tween(350))
+        }
+    }
+
+
+    val topStartCornerRadius = if (
+        (minSelectedDate?.persianDate?.startOfDay()?.time == date.persianDate.startOfDay().time && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+        (date.persianDate.startOfDay().time == selectedDatesRange.lastOrNull()?.persianDate?.startOfDay()?.time)
+    ) {
+        50.dp
+    } else {
+        0.dp
+    }
+
+    val bottomStartCornerRadius =
+        if (
+            (minSelectedDate?.persianDate?.startOfDay()?.time == date.persianDate.startOfDay().time && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+            (date.persianDate.startOfDay().time == selectedDatesRange.lastOrNull()?.persianDate?.startOfDay()?.time)
+        ) {
+            50.dp
+        } else {
+            0.dp
+        }
+
+    val topEndCornerRadius = if (
+        (minSelectedDate?.persianDate?.startOfDay()?.time == date.persianDate.startOfDay().time && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+        (date.persianDate.startOfDay().time == selectedDatesRange.firstOrNull()?.persianDate?.startOfDay()?.time)
+    ) {
+        50.dp
+    } else {
+        0.dp
+    }
+
+    val bottomEndCornerRadius = if (
+        (minSelectedDate?.persianDate?.startOfDay()?.time == date.persianDate.startOfDay().time && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+        (date.persianDate.startOfDay().time == selectedDatesRange.firstOrNull()?.persianDate?.startOfDay()?.time)
+    ) {
+        50.dp
+    } else {
+        0.dp
+    }
+
+    val topStartCorner =
+        animateDpAsState(targetValue = topEndCornerRadius, label = "", animationSpec = tween(350))
+    val bottomStartCorner = animateDpAsState(
+        targetValue = bottomEndCornerRadius,
+        label = "",
+        animationSpec = tween(350)
+    )
+    val topEndCorner =
+        animateDpAsState(targetValue = topStartCornerRadius, label = "", animationSpec = tween(350))
+    val bottomEndCorner = animateDpAsState(
+        targetValue = bottomStartCornerRadius,
+        label = "",
+        animationSpec = tween(350)
+    )
+
+
+
+
+    Box(contentAlignment = Alignment.Center, modifier = modifier
+        .background(
+            color.value,
+            RoundedCornerShape(
+                topStart = topStartCorner.value,
+                bottomStart = bottomStartCorner.value,
+                topEnd = topEndCorner.value,
+                bottomEnd = bottomEndCorner.value
+            )
+            //RoundedCornerShape(50.dp)
+        )
+        .clip(CircleShape)
+        .clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = rememberRipple(bounded = true),
+        ) {
+            controller.addToRangeList(date)
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(TEXT_CALENDAR_PADDING),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = date.value.toString(),
+                style = MaterialTheme.typography.bodySmall,
+                color = if (contentColor == color.value) containerColor else contentColor
+            )
+        }
+    }
+}
+
+
+@SuppressLint("ProduceStateDoesNotAssignValue")
+@Composable
+private fun SingleDayBox2(
+    title: String,
+    modifier: Modifier,
+    contentColor: Color,
+    containerColor: Color,
+    controller: PersianRangeDatePickerController
+) {
 
     val currentSelectedPersianDate = controller.currentSelectedPersianDate
     val minSelectedDate = controller.minSelectedDate
@@ -251,16 +364,26 @@ internal fun SingleDayBox2(title: String, modifier: Modifier, contentColor: Colo
     val selectedDatesRange = controller.selectedDatesRange
 
 
-    val color = remember(currentSelectedPersianDate.toString(), title) { Animatable(containerColor) }
-    val tmpDate = remember(currentSelectedPersianDate.toString(), title) { mutableStateOf(PersianDate(currentSelectedPersianDate.toDate())) }
+    val color =
+        remember(currentSelectedPersianDate.toString(), title) { Animatable(containerColor) }
+    val tmpDate = remember(currentSelectedPersianDate.toString(), title) {
+        mutableStateOf(
+            PersianDate(currentSelectedPersianDate.toDate())
+        )
+    }
     SideEffect {
         tmpDate.value.setShDay(title.toInt()).startOfDay()
     }
 
 
-    LaunchedEffect(minSelectedDate, currentSelectedPersianDate.toString(), selectedDatesRange.size) {
+    LaunchedEffect(
+        minSelectedDate,
+        currentSelectedPersianDate.toString(),
+        selectedDatesRange.size
+    ) {
 
-        val singleSelectedRangDate = selectedDatesRange.find { it.toString() == tmpDate.value.startOfDay()?.toString() }
+        val singleSelectedRangDate =
+            selectedDatesRange.find { it.toString() == tmpDate.value.startOfDay()?.toString() }
 
         if (
             (
@@ -279,16 +402,32 @@ internal fun SingleDayBox2(title: String, modifier: Modifier, contentColor: Colo
     }
 
 
-    var topStartCornerRadius by remember(selectedDatesRange.size, minSelectedDate, tmpDate.toString()) {
+    var topStartCornerRadius by remember(
+        selectedDatesRange.size,
+        minSelectedDate,
+        tmpDate.toString()
+    ) {
         mutableStateOf(50.dp)
     }
-    var bottomStartCornerRadius by remember(selectedDatesRange.size, minSelectedDate, tmpDate.toString()) {
+    var bottomStartCornerRadius by remember(
+        selectedDatesRange.size,
+        minSelectedDate,
+        tmpDate.toString()
+    ) {
         mutableStateOf(50.dp)
     }
-    var topEndCornerRadius by remember(selectedDatesRange.size, minSelectedDate, tmpDate.toString()) {
+    var topEndCornerRadius by remember(
+        selectedDatesRange.size,
+        minSelectedDate,
+        tmpDate.toString()
+    ) {
         mutableStateOf(50.dp)
     }
-    var bottomEndCornerRadius by remember(selectedDatesRange.size, minSelectedDate, tmpDate.toString()) {
+    var bottomEndCornerRadius by remember(
+        selectedDatesRange.size,
+        minSelectedDate,
+        tmpDate.toString()
+    ) {
         mutableStateOf(50.dp)
     }
 
@@ -341,10 +480,20 @@ internal fun SingleDayBox2(title: String, modifier: Modifier, contentColor: Colo
     }
 
 
-    val topStartCorner = animateDpAsState(targetValue = topEndCornerRadius, label = "", animationSpec = tween(350))
-    val bottomStartCorner = animateDpAsState(targetValue = bottomEndCornerRadius, label = "", animationSpec = tween(350))
-    val topEndCorner = animateDpAsState(targetValue = topStartCornerRadius, label = "", animationSpec = tween(350))
-    val bottomEndCorner = animateDpAsState(targetValue = bottomStartCornerRadius, label = "", animationSpec = tween(350))
+    val topStartCorner =
+        animateDpAsState(targetValue = topEndCornerRadius, label = "", animationSpec = tween(350))
+    val bottomStartCorner = animateDpAsState(
+        targetValue = bottomEndCornerRadius,
+        label = "",
+        animationSpec = tween(350)
+    )
+    val topEndCorner =
+        animateDpAsState(targetValue = topStartCornerRadius, label = "", animationSpec = tween(350))
+    val bottomEndCorner = animateDpAsState(
+        targetValue = bottomStartCornerRadius,
+        label = "",
+        animationSpec = tween(350)
+    )
 
 
 
@@ -365,7 +514,13 @@ internal fun SingleDayBox2(title: String, modifier: Modifier, contentColor: Colo
 
 @SuppressLint("ProduceStateDoesNotAssignValue")
 @Composable
-internal fun SingleDayBox(title: String, modifier: Modifier, contentColor: Color, containerColor: Color, controller: PersianRangeDatePickerController) {
+private fun SingleDayBox3(
+    title: String,
+    modifier: Modifier,
+    contentColor: Color,
+    containerColor: Color,
+    controller: PersianRangeDatePickerController
+) {
 
     val currentSelectedPersianDate = controller.currentSelectedPersianDate
     val minSelectedDate = controller.minSelectedDate
@@ -373,100 +528,220 @@ internal fun SingleDayBox(title: String, modifier: Modifier, contentColor: Color
     val selectedDatesRange = controller.selectedDatesRange
 
 
-    var color by remember(currentSelectedPersianDate.toString(), title) { mutableStateOf(containerColor) }
-    val tmpDate = remember(currentSelectedPersianDate.toString(), title) { mutableStateOf(PersianDate(currentSelectedPersianDate.toDate())) }
+    var colorMutable by remember(currentSelectedPersianDate.toString(), title) {
+        mutableStateOf(
+            containerColor
+        )
+    }
+
+    val tmpDate = remember(currentSelectedPersianDate.toString(), title) {
+        mutableStateOf(
+            PersianDate(currentSelectedPersianDate.toDate())
+        )
+    }
     SideEffect {
         tmpDate.value.setShDay(title.toInt()).startOfDay()
     }
 
 
-    val singleSelectedRangDate = selectedDatesRange.find { it.toString() == tmpDate.value.startOfDay()?.toString() }
+    val singleSelectedRangDate =
+        selectedDatesRange.find { it.toString() == tmpDate.value.startOfDay()?.toString() }
+    val color = remember(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+        derivedStateOf {
+            if (
+                (
+                        minSelectedDate?.toString() == tmpDate.value.toString() &&
+                                maxSelectedDate == null &&
+                                selectedDatesRange.isEmpty())
 
-    color = if (
-        (
-                minSelectedDate?.toString() == tmpDate.value.toString() &&
-                        maxSelectedDate == null &&
-                        selectedDatesRange.isEmpty())
+                ||
 
-        ||
-
-        (singleSelectedRangDate != null)
-    ) {
-        contentColor
-    } else {
-        containerColor
+                (singleSelectedRangDate != null)
+            ) {
+                contentColor
+            } else {
+                containerColor
+            }
+        }
     }
+    /* LaunchedEffect(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+         colorMutable = if (
+             (
+                     minSelectedDate?.toString() == tmpDate.value.toString() &&
+                             maxSelectedDate == null &&
+                             selectedDatesRange.isEmpty())
+
+             ||
+
+             (singleSelectedRangDate != null)
+         ) {
+             contentColor
+         } else {
+             containerColor
+         }
+     }*/
 
 
-    var topStartCornerRadius by remember(selectedDatesRange.size, minSelectedDate, tmpDate.toString()) {
+    var topStartCornerRadiusMutable by remember(
+        selectedDatesRange.size,
+        minSelectedDate,
+        tmpDate.toString()
+    ) {
         mutableStateOf(50.dp)
     }
-    var bottomStartCornerRadius by remember(selectedDatesRange.size, minSelectedDate, tmpDate.toString()) {
+    val topStartCornerRadius =
+        remember(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+            derivedStateOf {
+                if (
+                    (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+                    (tmpDate.value.toString() == selectedDatesRange.lastOrNull()?.toString())
+                ) {
+                    50.dp
+                } else {
+                    0.dp
+                }
+            }
+        }
+    var bottomStartCornerRadiusMutable by remember(
+        selectedDatesRange.size,
+        minSelectedDate,
+        tmpDate.toString()
+    ) {
         mutableStateOf(50.dp)
     }
-    var topEndCornerRadius by remember(selectedDatesRange.size, minSelectedDate, tmpDate.toString()) {
+    val bottomStartCornerRadius =
+        remember(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+            derivedStateOf {
+                if (
+                    (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+                    (tmpDate.value.toString() == selectedDatesRange.lastOrNull()?.toString())
+                ) {
+                    50.dp
+                } else {
+                    0.dp
+                }
+            }
+        }
+    var topEndCornerRadiusMutable by remember(
+        selectedDatesRange.size,
+        minSelectedDate,
+        tmpDate.toString()
+    ) {
         mutableStateOf(50.dp)
     }
-    var bottomEndCornerRadius by remember(selectedDatesRange.size, minSelectedDate, tmpDate.toString()) {
+    val topEndCornerRadius =
+        remember(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+            derivedStateOf {
+                if (
+                    (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+                    (tmpDate.value.toString() == selectedDatesRange.firstOrNull()?.toString())
+                ) {
+                    50.dp
+                } else {
+                    0.dp
+                }
+            }
+        }
+    var bottomEndCornerRadiusMutable by remember(
+        selectedDatesRange.size,
+        minSelectedDate,
+        tmpDate.toString()
+    ) {
         mutableStateOf(50.dp)
     }
+    val bottomEndCornerRadius =
+        remember(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+            derivedStateOf {
+                if (
+                    (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+                    (tmpDate.value.toString() == selectedDatesRange.firstOrNull()?.toString())
+                ) {
+                    50.dp
+                } else {
+                    0.dp
+                }
+            }
+        }
 
-    topStartCornerRadius = if (
-        (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
-        (tmpDate.value.toString() == selectedDatesRange.lastOrNull()?.toString())
-    ) {
-        50.dp
-    } else {
-        0.dp
-    }
-
-
-    bottomStartCornerRadius = if (
-        (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
-        (tmpDate.value.toString() == selectedDatesRange.lastOrNull()?.toString())
-    ) {
-        50.dp
-    } else {
-        0.dp
-    }
-
-
-    topEndCornerRadius = if (
-        (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
-        (tmpDate.value.toString() == selectedDatesRange.firstOrNull()?.toString())
-    ) {
-        50.dp
-    } else {
-        0.dp
-    }
+    /*LaunchedEffect(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+        topStartCornerRadiusMutable = if (
+            (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+            (tmpDate.value.toString() == selectedDatesRange.lastOrNull()?.toString())
+        ) {
+            50.dp
+        } else {
+            0.dp
+        }
+    }*/
 
 
+    /*  LaunchedEffect(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+          bottomStartCornerRadiusMutable = if (
+              (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+              (tmpDate.value.toString() == selectedDatesRange.lastOrNull()?.toString())
+          ) {
+              50.dp
+          } else {
+              0.dp
+          }
+      }*/
 
-    bottomEndCornerRadius = if (
-        (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
-        (tmpDate.value.toString() == selectedDatesRange.firstOrNull()?.toString())
-    ) {
-        50.dp
-    } else {
-        0.dp
-    }
 
-    /*
-        val topStartCorner = animateDpAsState(targetValue = topEndCornerRadius, label = "", animationSpec = tween(350))
-        val bottomStartCorner = animateDpAsState(targetValue = bottomEndCornerRadius, label = "", animationSpec = tween(350))
-        val topEndCorner = animateDpAsState(targetValue = topStartCornerRadius, label = "", animationSpec = tween(350))
-        val bottomEndCorner = animateDpAsState(targetValue = bottomStartCornerRadius, label = "", animationSpec = tween(350))
-    */
+    /* LaunchedEffect(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+         topEndCornerRadiusMutable = if (
+             (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+             (tmpDate.value.toString() == selectedDatesRange.firstOrNull()?.toString())
+         ) {
+             50.dp
+         } else {
+             0.dp
+         }
+     }*/
+
+
+    /*LaunchedEffect(minSelectedDate, maxSelectedDate, selectedDatesRange, tmpDate) {
+        bottomEndCornerRadiusMutable = if (
+            (minSelectedDate?.toString() == tmpDate.value.toString() && maxSelectedDate == null && selectedDatesRange.isEmpty()) ||
+            (tmpDate.value.toString() == selectedDatesRange.firstOrNull()?.toString())
+        ) {
+            50.dp
+        } else {
+            0.dp
+        }
+    }*/
+
+
+    val topStartCorner = animateDpAsState(
+        targetValue = topEndCornerRadius.value,
+        label = "",
+        animationSpec = tween(200)
+    )
+    val bottomStartCorner = animateDpAsState(
+        targetValue = bottomEndCornerRadius.value,
+        label = "",
+        animationSpec = tween(200)
+    )
+    val topEndCorner = animateDpAsState(
+        targetValue = topStartCornerRadius.value,
+        label = "",
+        animationSpec = tween(200)
+    )
+    val bottomEndCorner = animateDpAsState(
+        targetValue = bottomStartCornerRadius.value,
+        label = "",
+        animationSpec = tween(200)
+    )
+
 
 
 
     SingleDayBoxStateless(
         modifier = modifier,
-        color = color,
-        topStartCorner = bottomEndCornerRadius,
-        bottomStartCorner = bottomEndCornerRadius,
-        topEndCorner = topStartCornerRadius,
-        bottomEndCorner = bottomStartCornerRadius,
+        color = color.value,
+        topStartCorner = topStartCorner.value,
+        bottomStartCorner = bottomStartCorner.value,
+        topEndCorner = topEndCorner.value,
+        bottomEndCorner = bottomEndCorner.value,
         controller = controller,
         title = title,
         contentColor = contentColor,
@@ -474,8 +749,140 @@ internal fun SingleDayBox(title: String, modifier: Modifier, contentColor: Color
     )
 }
 
+@SuppressLint("ProduceStateDoesNotAssignValue")
 @Composable
-internal fun SingleDayBoxStateless(
+private fun SingleDayBox(
+    title: String,
+    modifier: Modifier,
+    contentColor: Color,
+    containerColor: Color,
+    controller: PersianRangeDatePickerController
+) {
+
+    val currentSelectedPersianDate = controller.currentSelectedPersianDate
+    val minSelectedDate = controller.minSelectedDate
+    val maxSelectedDate = controller.maxSelectedDate
+    val selectedDatesRange = controller.selectedDatesRange
+
+
+    val tmpDate = remember(currentSelectedPersianDate.toString(), title) {
+        mutableStateOf(
+            PersianDate(currentSelectedPersianDate.toDate())
+        )
+    }
+    SideEffect {
+        tmpDate.value.setShDay(title.toInt()).startOfDay()
+    }
+
+
+    //  val colorSelected = controller.selectedDatesRange.find { it.toString() == tmpDate.value.startOfDay()?.toString() }!=null
+    val color =
+        remember(currentSelectedPersianDate.toString(), title) { Animatable(containerColor) }
+
+    LaunchedEffect(
+        minSelectedDate,
+        currentSelectedPersianDate.toString(),
+        selectedDatesRange.size
+    ) {
+
+        val singleSelectedRangDate =
+            selectedDatesRange.find { it.toString() == tmpDate.value.startOfDay()?.toString() }
+
+        if (
+            (
+                    minSelectedDate?.toString() == tmpDate.value.toString() &&
+                            maxSelectedDate == null &&
+                            selectedDatesRange.isEmpty())
+
+            ||
+
+            (singleSelectedRangDate != null)
+        ) {
+            color.animateTo(contentColor, animationSpec = tween(350))
+        } else {
+            color.animateTo(containerColor, animationSpec = tween(350))
+        }
+    }
+
+    /*  val color by animateColorAsState(
+          if (colorSelected) {
+              contentColor
+          } else {
+              containerColor
+          }, label = "", animationSpec = tween(350)
+      )*/
+
+    /*
+       val topStartCornerRadius = if (
+           (controller.isSelected(tmpDate.value)) ||
+           (controller.isLast(tmpDate.value))
+       ) {
+           50.dp
+       } else {
+           0.dp
+       }
+       val bottomStartCornerRadius = if (
+           (controller.isSelected(tmpDate.value)) ||
+           (controller.isLast(tmpDate.value))
+       ) {
+           50.dp
+       } else {
+           0.dp
+       }
+       val topEndCornerRadius = if (
+           (controller.isSelected(tmpDate.value)) ||
+           (controller.isFirst(tmpDate.value))
+       ) {
+           50.dp
+       } else {
+           0.dp
+       }
+       val bottomEndCornerRadius = if (
+           (controller.isSelected(tmpDate.value)) ||
+           (controller.isFirst(tmpDate.value))
+       ) {
+           50.dp
+       } else {
+           0.dp
+       }
+
+       val topStartCorner = animateDpAsState(targetValue = topEndCornerRadius, label = "", animationSpec = tween(350))
+       val bottomStartCorner = animateDpAsState(targetValue = bottomEndCornerRadius, label = "", animationSpec = tween(350))
+       val topEndCorner = animateDpAsState(targetValue = topStartCornerRadius, label = "", animationSpec = tween(350))
+       val bottomEndCorner = animateDpAsState(targetValue = bottomStartCornerRadius, label = "", animationSpec = tween(350))
+   */
+
+
+    Box(contentAlignment = Alignment.Center, modifier = modifier
+        .background(
+            color.value,
+            //  RoundedCornerShape(topStart = topStartCorner.value, bottomStart = bottomStartCorner.value, topEnd = topEndCorner.value, bottomEnd = bottomEndCorner.value)
+        )
+        .clip(CircleShape)
+        .clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = rememberRipple(bounded = true),
+        ) {
+            // controller.addToRangeList(title.toInt())
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(TEXT_CALENDAR_PADDING),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodySmall,
+                color = if (contentColor == color.value) containerColor else contentColor
+            )
+        }
+    }
+}
+
+@Composable
+private fun SingleDayBoxStateless(
     modifier: Modifier,
     color: Color,
     contentColor: Color,
@@ -493,82 +900,44 @@ internal fun SingleDayBoxStateless(
             Modifier
                 .background(
                     color,
-                    RoundedCornerShape(topStart = topStartCorner, bottomStart = bottomStartCorner, topEnd = topEndCorner, bottomEnd = bottomEndCorner)
+                    RoundedCornerShape(
+                        topStart = topStartCorner,
+                        bottomStart = bottomStartCorner,
+                        topEnd = topEndCorner,
+                        bottomEnd = bottomEndCorner
+                    )
                 )
                 .clip(CircleShape)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = rememberRipple(bounded = true),
                 ) {
-                    controller.addToRangeList(title.toInt())
+                    // controller.addToRangeList(title.toInt())
                 }
         )) {
         Column(
             modifier = Modifier
-                .padding(TEXT_CALENDAR_PADDING), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(TEXT_CALENDAR_PADDING),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(text = title, style = MaterialTheme.typography.bodySmall, color = if (contentColor == color) containerColor else contentColor)
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodySmall,
+                color = if (contentColor == color) containerColor else contentColor
+            )
         }
     }
 }
 
 @Composable
-internal fun WeekTitleBox(textStyle: TextStyle, containerColor: Color, contentColor: Color) {
-    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(
-            text = "ش", style = textStyle, textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(TEXT_CALENDAR_PADDING)
-                .weight(1f),
-            color = contentColor,
-        )
-        Text(
-            text = "ی", textAlign = TextAlign.Center, style = textStyle,
-            modifier = Modifier
-                .padding(TEXT_CALENDAR_PADDING)
-                .weight(1f),
-            color = contentColor,
-        )
-        Text(
-            text = "د", textAlign = TextAlign.Center, style = textStyle,
-            modifier = Modifier
-                .padding(TEXT_CALENDAR_PADDING)
-                .weight(1f),
-            color = contentColor,
-        )
-        Text(
-            text = "س", textAlign = TextAlign.Center, style = textStyle,
-            modifier = Modifier
-                .padding(TEXT_CALENDAR_PADDING)
-                .weight(1f),
-            color = contentColor,
-        )
-        Text(
-            text = "چ", textAlign = TextAlign.Center, style = textStyle,
-            modifier = Modifier
-                .padding(TEXT_CALENDAR_PADDING)
-                .weight(1f),
-            color = contentColor,
-        )
-        Text(
-            text = "پ", textAlign = TextAlign.Center, style = textStyle,
-            modifier = Modifier
-                .padding(TEXT_CALENDAR_PADDING)
-                .weight(1f),
-            color = contentColor,
-        )
-        Text(
-            text = "ج", textAlign = TextAlign.Center, style = textStyle,
-            modifier = Modifier
-                .padding(TEXT_CALENDAR_PADDING)
-                .weight(1f),
-            color = contentColor,
-        )
-    }
-}
-
-@Composable
-private fun MonthTitleBox(prevOnExecute: () -> Unit, nextOnExecute: () -> Unit, contentColor: Color, controller: PersianRangeDatePickerController, containerColor: Color) {
+private fun MonthTitleBox(
+    prevOnExecute: () -> Unit,
+    nextOnExecute: () -> Unit,
+    contentColor: Color,
+    controller: PersianRangeDatePickerController,
+    containerColor: Color
+) {
     Box(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -584,12 +953,24 @@ private fun MonthTitleBox(prevOnExecute: () -> Unit, nextOnExecute: () -> Unit, 
                 //    controller.nextMonth()
                 nextOnExecute()
             }) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = null, tint = containerColor)
+                Icon(
+                    Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                    contentDescription = null,
+                    tint = containerColor
+                )
             }
 
-            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 Text(
-                    text = String.format(Locale.getDefault(), "%s %d", controller.currentSelectedPersianDate.monthName, controller.currentSelectedPersianDate.shYear),
+                    text = String.format(
+                        Locale.getDefault(),
+                        "%s %d",
+                        controller.currentSelectedPersianDate.monthName,
+                        controller.currentSelectedPersianDate.shYear
+                    ),
                     style = MaterialTheme.typography.bodyLarge,
                     color = containerColor
                 )
@@ -604,7 +985,11 @@ private fun MonthTitleBox(prevOnExecute: () -> Unit, nextOnExecute: () -> Unit, 
                 //  controller.prevMonth()
                 prevOnExecute()
             }) {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = containerColor)
+                Icon(
+                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = containerColor
+                )
             }
         }
     }
