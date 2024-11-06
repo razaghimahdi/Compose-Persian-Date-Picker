@@ -18,6 +18,7 @@ package com.razaghimahdi.compose_persian_date.core.controller
 
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -60,10 +61,6 @@ class PersianRangeDatePickerController {
     internal val currentSelectedPersianDate get() = _currentSelectedPersianDate.value
 
 
-    private var _minSelectedDate: MutableState<PDate?> = mutableStateOf(null)
-    internal val minSelectedDate get() = _minSelectedDate.value
-
-
     private var _selectedYear: MutableState<Int> = mutableIntStateOf(getPersianYear())
     internal val selectedYear get() = _selectedYear.value
 
@@ -72,10 +69,6 @@ class PersianRangeDatePickerController {
 
     private var _selectedDay: MutableState<Int> = mutableIntStateOf(getPersianDay())
     internal val selectedDay get() = _selectedDay.value
-
-    private var _maxSelectedDate: MutableState<PDate?> = mutableStateOf(null)
-    internal val maxSelectedDate get() = _maxSelectedDate.value
-
 
     private var _yearRange: MutableState<Int> = mutableIntStateOf(10)
     internal val yearRange get() = _yearRange.value
@@ -142,30 +135,51 @@ class PersianRangeDatePickerController {
 
     internal fun addToRangeList(date: PDate) {
 
-        Log.i("AppDebug", "addToRangeList date:  "+date)
+        var list = selectedDatesRange.toMutableList() ?: mutableListOf()
 
-        val tmpDate = date.persianDate
 
-        if (minSelectedDate == null && maxSelectedDate == null) {
-            _minSelectedDate.value = PDate(value = tmpDate.startOfDay().shDay, persianDate = tmpDate.startOfDay(),isSelected = false)
-        } else if (minSelectedDate != null && maxSelectedDate == null) {
-            if (tmpDate < minSelectedDate?.persianDate!!) {
-                _maxSelectedDate.value = minSelectedDate
-                _minSelectedDate.value = PDate(value = tmpDate.startOfDay().shDay, persianDate = tmpDate.startOfDay(),isSelected = false)
-            } else {
-                _maxSelectedDate.value = PDate(value = tmpDate.startOfDay().shDay, persianDate = tmpDate.startOfDay(),isSelected = false)
+        if (list.isEmpty()) {// first time so add the min date
+             list.add(date)
+        } else if (list.size == 1) {
+             val firstDate = list.first()
+            list = if (date.persianDate.startOfDay().time > firstDate.persianDate.startOfDay().time) {
+                initRangDates(
+                    minSelectedDate = firstDate,
+                    maxSelectedDate = date
+                ).toMutableList()
+            }else{
+                initRangDates(
+                    minSelectedDate = date,
+                    maxSelectedDate = firstDate
+                ).toMutableList()
             }
-            initRangDates()
-        } else if (minSelectedDate != null && maxSelectedDate != null) {
-            _minSelectedDate.value = null
-            _maxSelectedDate.value = null
-            _selectedDatesRange.value = emptyList()
-            addToRangeList(date)
+        } else {
+             list.clear()
         }
+        _selectedDatesRange.value = list
+
+
+        // val tmpDate = date.persianDate
+//        if (minSelectedDate == null && maxSelectedDate == null) {
+//            _minSelectedDate.value = PDate(value = tmpDate.startOfDay().shDay, persianDate = tmpDate.startOfDay(),isSelected = false)
+//        } else if (minSelectedDate != null && maxSelectedDate == null) {
+//            if (tmpDate < minSelectedDate?.persianDate!!) {
+//                _maxSelectedDate.value = minSelectedDate
+//                _minSelectedDate.value = PDate(value = tmpDate.startOfDay().shDay, persianDate = tmpDate.startOfDay(),isSelected = false)
+//            } else {
+//                _maxSelectedDate.value = PDate(value = tmpDate.startOfDay().shDay, persianDate = tmpDate.startOfDay(),isSelected = false)
+//            }
+//            initRangDates()
+//        } else if (minSelectedDate != null && maxSelectedDate != null) {
+//            _minSelectedDate.value = null
+//            _maxSelectedDate.value = null
+//            _selectedDatesRange.value = emptyList()
+//            addToRangeList(date)
+//        }
 
     }
 
-    private fun initRangDates() {
+    private fun initRangDates(minSelectedDate: PDate?, maxSelectedDate: PDate?): List<PDate> {
         val startDate = minSelectedDate?.persianDate?.toDate()
             ?: throw IllegalArgumentException("start date is null")
         val endDate = maxSelectedDate?.persianDate?.toDate()
@@ -190,10 +204,39 @@ class PersianRangeDatePickerController {
             calendar.add(Calendar.DATE, 1)
         }
 
-            // _selectedDatesRange.value.addAll(datesInRange)
-        _selectedDatesRange.value = datesInRange
+        // _selectedDatesRange.value.addAll(datesInRange)
+        return datesInRange
 
     }
+//    private fun initRangDates() {
+//        val startDate = minSelectedDate?.persianDate?.toDate()
+//            ?: throw IllegalArgumentException("start date is null")
+//        val endDate = maxSelectedDate?.persianDate?.toDate()
+//            ?: throw IllegalArgumentException("end date is null")
+//
+//
+//        val datesInRange = arrayListOf<PDate>()
+//        val calendar = Calendar.getInstance()
+//        calendar.time = startDate
+//        val endCalendar = Calendar.getInstance()
+//        endCalendar.time = endDate
+//
+//        while (!calendar.after(endCalendar)) {
+//            val result = calendar.time
+//            datesInRange.add(
+//                PDate(
+//                    persianDate = PersianDate(result),
+//                    isSelected = false,
+//                    value = PersianDate(result).shDay
+//                )
+//            )
+//            calendar.add(Calendar.DATE, 1)
+//        }
+//
+//            // _selectedDatesRange.value.addAll(datesInRange)
+//        _selectedDatesRange.value = datesInRange
+//
+//    }
 
 
     fun updateYearRange(value: Int) {
@@ -338,6 +381,13 @@ class PersianRangeDatePickerController {
             currentDate ?: throw IllegalArgumentException("current date not found!")
 
     }
+
+
+    internal fun minSelectedDate() =
+        if (selectedDatesRange.isNotEmpty()) selectedDatesRange.first() else null
+
+    internal fun  maxSelectedDate() =
+        if (selectedDatesRange.size > 1) selectedDatesRange.last() else null
 
 
 }
