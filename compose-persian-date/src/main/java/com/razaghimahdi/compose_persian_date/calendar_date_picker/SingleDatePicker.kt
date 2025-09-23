@@ -144,7 +144,7 @@ fun SingleDatePicker(
                     contentColor = contentColor
                 )
                 InfiniteHorizontalPager(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxWidth(),
                     pagerState = pagerState,
                     pagerPositionIndex = pagerPositionIndex,
                     pageCount = controller.dateListCollection.size,
@@ -175,7 +175,7 @@ private fun CalendarBox(
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(7),
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxWidth()
     ) {
 
         items(items = list) { date ->
