@@ -5,5 +5,5 @@ import saman.zamani.persiandate.PersianDate
 data class PDate(
     val value: Int,
     val persianDate: PersianDate,
-    val isSelected: Boolean
+    val isSelected: Boolean = false
 )
