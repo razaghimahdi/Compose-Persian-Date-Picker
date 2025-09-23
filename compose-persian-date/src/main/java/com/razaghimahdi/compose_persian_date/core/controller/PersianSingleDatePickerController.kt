@@ -50,8 +50,8 @@ class PersianSingleDatePickerController {
     private var _dateList: MutableState<List<PDate>> = mutableStateOf(listOf())
     internal val dateList get() = _dateList.value
 
-    private var _date: MutableState<PersianDate> = mutableStateOf(PersianDate())
-    internal val date get() = _date.value
+    /* private var _date: MutableState<PersianDate> = mutableStateOf(PersianDate())
+     internal val date get() = _date.value*/
 
     private var _yearRange: MutableState<Int> = mutableIntStateOf(10)
     internal val yearRange get() = _yearRange.value
@@ -90,7 +90,8 @@ class PersianSingleDatePickerController {
     internal val currentSelectedPersianDate get() = _currentSelectedPersianDate.value
 
 
-    private var _selectedDate: MutableState<PDate?> = mutableStateOf(null)
+    private var _selectedDate: MutableState<PDate> =
+        mutableStateOf(PDate(persianDate = PersianDate(), value = PersianDate().shDay))
     internal val selectedDate get() = _selectedDate.value
 
 
@@ -153,10 +154,28 @@ class PersianSingleDatePickerController {
         updateSelectedDate()
     }
 
-    private fun updateSelectedDate() {
-        updateSelectedYear(date.shYear)
-        updateSelectedMonth(date.shMonth)
-        updateSelectedDay(date.shDay)
+    fun updateSelectedDate(persianYear: Int, persianMonth: Int, persianDay: Int) {
+        _selectedDate.value = PDate(persianDay, PersianDate())
+        selectedDate.persianDate.shDay = persianDay
+        selectedDate.persianDate.shMonth = persianMonth
+        selectedDate.persianDate.shYear = persianYear
+        updateSelectedYear(selectedDate.persianDate.shYear)
+        updateSelectedMonth(selectedDate.persianDate.shMonth)
+        updateSelectedDay(selectedDate.persianDate.shDay)
+    }
+
+    fun updateSelectedDate(date: Date) {
+        _selectedDate.value = PDate(PersianDate(date).shDay, PersianDate(date))
+        updateSelectedYear(selectedDate.persianDate.shYear)
+        updateSelectedMonth(selectedDate.persianDate.shMonth)
+        updateSelectedDay(selectedDate.persianDate.shDay)
+    }
+
+    fun updateSelectedDate(timestamp: Long) {
+        _selectedDate.value = PDate(PersianDate(timestamp).shDay, PersianDate(timestamp))
+        updateSelectedYear(selectedDate.persianDate.shYear)
+        updateSelectedMonth(selectedDate.persianDate.shMonth)
+        updateSelectedDay(selectedDate.persianDate.shDay)
     }
 
     internal fun resetDate(onDateChanged: ((year: Int, month: Int, day: Int) -> Unit)? = null) {
@@ -214,70 +233,30 @@ class PersianSingleDatePickerController {
     }
 
 
+    fun getPersianYear(): Int = selectedDate.persianDate.shYear
 
-    fun getPersianYear(): Int = date.shYear
+    fun getPersianMonth(): Int = selectedDate.persianDate.shMonth
 
-    fun getPersianMonth(): Int = date.shMonth
+    fun getPersianDay(): Int = selectedDate.persianDate.shDay
 
-    fun getPersianDay(): Int = date.shDay
+    fun getGregorianYear(): Int = selectedDate.persianDate.grgYear
 
-    fun getGregorianYear(): Int = date.grgYear
+    fun getGregorianMonth(): Int = selectedDate.persianDate.grgMonth
 
-    fun getGregorianMonth(): Int = date.grgMonth
+    fun getGregorianDay(): Int = selectedDate.persianDate.grgDay
 
-    fun getGregorianDay(): Int = date.grgDay
+    fun getDayOfWeek(): Int = selectedDate.persianDate.dayOfWeek()
 
-    fun getDayOfWeek(): Int = date.dayOfWeek()
+    fun getPersianMonthName(): String? = selectedDate.persianDate.monthName
 
-    fun getPersianMonthName(): String? = date.monthName
-
-    fun getPersianDayOfWeekName(): String? = date.dayName()
+    fun getPersianDayOfWeekName(): String? = selectedDate.persianDate.dayName()
 
     fun getPersianFullDate(): String =
         getPersianDayOfWeekName() + "  " + getPersianDay() + "  " + getPersianMonthName() + "  " + getPersianYear()
 
-    fun getGregorianDate(): Date? = date.toDate()
+    fun getGregorianDate(): Date? = selectedDate.persianDate.toDate()
 
-    fun getTimestamp(): Long = date.time
-
-    internal fun updateFromCustomNumberPicker(
-        newYear: Int? = null,
-        newMonth: Int? = null,
-        newDay: Int? = null
-    ) {
-        if (newYear != null) updateSelectedYear(newYear)
-        if (newMonth != null) updateSelectedMonth(newMonth)
-        if (newDay != null) updateSelectedDay(newDay)
-
-        val isLeapYear = date.isLeap(selectedYear)
-
-        if (selectedMonth < 7) {
-            updateMaxDay(31)
-        } else if (selectedMonth < 12) {
-            if (selectedDay == 31) {
-                updateSelectedDay(30)
-            }
-            updateMaxDay(30)
-        } else if (selectedMonth == 12) {
-            if (isLeapYear) {
-                if (selectedDay == 31) {
-                    updateSelectedDay(30)
-                }
-                updateMaxDay(30)
-            } else {
-                if (selectedDay > 29) {
-                    updateSelectedDay(29)
-                }
-                updateMaxDay(29)
-            }
-        }
-
-        updateDate(
-            persianDay = selectedDay,
-            persianMonth = selectedMonth,
-            persianYear = selectedYear
-        )
-    }
+    fun getTimestamp(): Long = selectedDate.persianDate.time
 
     internal fun getFirstNameDayOfWeek(): Int {
         val tmpDate = currentSelectedPersianDate
@@ -313,7 +292,7 @@ class PersianSingleDatePickerController {
         if (selectedMonth in 7..11 && selectedDay == 31) {
             updateSelectedDay(30)
         } else {
-            val isLeapYear = date.isLeap(selectedYear)
+            val isLeapYear = selectedDate.persianDate.isLeap(selectedYear)
             if (isLeapYear && selectedDay == 31) {
                 updateSelectedDay(30)
             } else if (selectedDay > 29) {
