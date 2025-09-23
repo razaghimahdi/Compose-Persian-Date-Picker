@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -26,6 +27,8 @@ internal fun NoPaddingAlertDialog(
     buttons: @Composable () -> Unit,
     shape: Shape = MaterialTheme.shapes.medium,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
+    tonalElevation: Dp = 0.dp,
+    shadowElevation: Dp = 8.dp,
     contentColor: Color = contentColorFor(backgroundColor),
     properties: DialogProperties = DialogProperties()
 ) {
@@ -39,7 +42,9 @@ internal fun NoPaddingAlertDialog(
                 modifier = modifier,
                 shape = shape,
                 color = backgroundColor,
-                contentColor = contentColor
+                contentColor = contentColor,
+                tonalElevation = tonalElevation,
+                shadowElevation = shadowElevation,
             ) {
                 Column(
                     modifier = Modifier
