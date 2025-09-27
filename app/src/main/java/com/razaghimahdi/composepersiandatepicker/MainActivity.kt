@@ -27,10 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.SecureFlagPolicy
 import com.razaghimahdi.compose_persian_date.bottom_sheet.DatePickerLinearModalBottomSheet
 import com.razaghimahdi.compose_persian_date.calendar_date_picker.RangeDatePicker
-import com.razaghimahdi.compose_persian_date.calendar_date_picker.SingleDatePicker
 import com.razaghimahdi.compose_persian_date.core.controller.rememberDialogDatePicker
 import com.razaghimahdi.compose_persian_date.core.controller.rememberPersianRangeDatePickerController
-import com.razaghimahdi.compose_persian_date.core.controller.rememberPersianSingleDatePickerController
 import com.razaghimahdi.compose_persian_date.dialog.PersianLinearDatePickerDialog
 import com.razaghimahdi.composepersiandatepicker.ui.theme.ComposePersianDatePickerTheme
 import kotlinx.coroutines.launch
@@ -119,8 +117,7 @@ class MainActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
 
-                        // RangeDatePicker(rememberPersianRangeDatePickerController())
-                        SingleDatePicker(rememberPersianSingleDatePickerController())
+                        RangeDatePicker(rememberPersianRangeDatePickerController())
 
 
                         Button(onClick = { showDialog.value = true }) {
